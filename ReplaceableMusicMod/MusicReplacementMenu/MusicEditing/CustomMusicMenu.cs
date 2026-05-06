@@ -7,7 +7,7 @@ using MusicReplacer.ReplacementSystem;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MusicReplacer.MusicReplacementMenu;
+namespace MusicReplacer.MusicReplacementMenu.MusicEditing;
 
 public class CustomMusicMenu : MonoBehaviour
 {
@@ -42,7 +42,7 @@ public class CustomMusicMenu : MonoBehaviour
             },
         delegate
         {
-            MusicMenuEnabler.Main.SetMusicMenuActive(false);
+            MusicMenuEnabler.Main.SetTab(MusicMenuEnabler.Tab.MusicEditorHome);
         }, OnChoiceChange, OnChoiceChange);
 
         if (Utils.GetButtonPushed(PadsController.LS_LEFT))

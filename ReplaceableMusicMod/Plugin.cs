@@ -1,9 +1,11 @@
 ﻿using System.Collections;
+using System.IO;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 using MusicReplacer.ReplacementSystem;
+using UnityEngine;
 
 namespace MusicReplacer;
 
@@ -16,6 +18,8 @@ public class Plugin : BaseUnityPlugin
 
     private static Plugin _main;
     
+    internal static AssetBundle Bundle { get; private set; }
+    
     private void Awake()
     {
         _main = this;
@@ -27,7 +31,10 @@ public class Plugin : BaseUnityPlugin
         Logger = base.Logger;
         
         // Register main logic
+        LevelRipper.LoadLevelData();
         MusicReplacementManager.Register();
+
+        Bundle = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(Assembly.Location), "Assets", "episodeassets"));
 
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
     }

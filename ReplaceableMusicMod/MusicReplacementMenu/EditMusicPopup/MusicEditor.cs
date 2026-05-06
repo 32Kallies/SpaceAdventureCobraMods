@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using CobraSoundReplacer.Utils;
 using MusicReplacer.MusicReplacementMenu.EditMusicPopup.Elements;
+using MusicReplacer.MusicReplacementMenu.MusicEditing;
 using MusicReplacer.ReplacementSystem;
 using UnityEngine;
 

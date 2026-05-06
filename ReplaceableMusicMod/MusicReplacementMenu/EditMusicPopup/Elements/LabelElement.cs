@@ -5,6 +5,8 @@ namespace MusicReplacer.MusicReplacementMenu.EditMusicPopup.Elements;
 
 public class LabelElement : MusicEditorElementBase
 {
+    public Text text;
+    
     public static LabelElement Create(string labelText, int fontSize = 100, float height = 180)
     {
         var element = CreateBase(height);
@@ -22,6 +24,8 @@ public class LabelElement : MusicEditorElementBase
         text.font = MusicMenuBuilder.ButtonFont;
         text.color = Color.white;
         text.text = labelText;
+        
+        label.text = text;
         return label;
     }
 }

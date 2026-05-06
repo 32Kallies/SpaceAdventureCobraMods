@@ -25,7 +25,7 @@ public static class NewMenuPatch
         {
             var menuEnabler = MusicMenuEnabler.Main;
             if (menuEnabler)
-                menuEnabler.SetMusicMenuActive(true);
+                menuEnabler.SetTab(MusicMenuEnabler.Tab.MusicEditorHome);
             else
                 Plugin.Logger.LogError("Failed to find MusicMenuEnabler");
         }

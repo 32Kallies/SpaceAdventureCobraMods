@@ -2,7 +2,7 @@ using MusicReplacer.ReplacementSystem;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MusicReplacer.MusicReplacementMenu;
+namespace MusicReplacer.MusicReplacementMenu.MusicEditing;
 
 public class MusicButton : MonoBehaviour
 {
