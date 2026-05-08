@@ -12,9 +12,10 @@ public static class MusicProcessor
     private static List<MusicSound> _musicSounds;
     private static Dictionary<string, MusicSound> _musicSoundsByLoadName;
     private static List<audioSelectionData.eCLIP> _musicEClips;
+    private static Dictionary<audioSelectionData.eCLIP, string> _loadNameByEClip;
     // private static Dictionary<audioSelectionData.eCLIP, MusicSound> _musicSoundsByEClip;
 
-    private static Dictionary<MusicCategory, List<MusicSound>> MusicByCategory;
+    private static Dictionary<MusicCategory, List<MusicSound>> _musicByCategory;
     
     private static readonly HashSet<string> UnusedMusic =
     [
@@ -61,6 +62,8 @@ public static class MusicProcessor
             if (eClip.ToString().StartsWith(MusicEClipPrefix, StringComparison.OrdinalIgnoreCase))
                 _musicEClips.Add(eClip);
         }
+        
+        _loadNameByEClip = new Dictionary<audioSelectionData.eCLIP, string>();
 
         foreach (var eClip in _musicEClips)
         {
@@ -78,16 +81,17 @@ public static class MusicProcessor
             }
 
             data.EClip = eClip;
+            _loadNameByEClip.Add(eClip, soundName);
         }
 
-        MusicByCategory = new Dictionary<MusicCategory, List<MusicSound>>();
+        _musicByCategory = new Dictionary<MusicCategory, List<MusicSound>>();
         foreach (var sound in _musicSounds)
         {
             var category = GetCategoryForSoundName(sound.FileName);
-            if (!MusicByCategory.TryGetValue(category, out var list))
+            if (!_musicByCategory.TryGetValue(category, out var list))
             {
                 list = new List<MusicSound>();
-                MusicByCategory[category] = list;
+                _musicByCategory[category] = list;
             }
 
             list.Add(sound);
@@ -105,7 +109,17 @@ public static class MusicProcessor
 
     public static IEnumerable<MusicSound> GetMusicForCategory(MusicCategory category)
     {
-        return MusicByCategory[category];
+        return _musicByCategory[category];
+    }
+
+    public static string GetLoadNameForEClip(audioSelectionData.eCLIP clip)
+    {
+        if (_loadNameByEClip.TryGetValue(clip, out var name) && !string.IsNullOrEmpty(name))
+        {
+            return name;
+        }
+        Plugin.Logger.LogWarning("Failed to find LoadName for EClip: " + clip);
+        return clip.ToString();
     }
 
     private static MusicCategory GetCategoryForSoundName(string soundName)

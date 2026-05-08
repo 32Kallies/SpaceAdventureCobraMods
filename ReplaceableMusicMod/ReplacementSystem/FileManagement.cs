@@ -10,6 +10,7 @@ public static class FileManagement
 {
     private const string SoundsFolderName = "Custom Music";
     private const string SoundPackName = "CustomMusicData.soundreplacements";
+    private const string LevelOverridesName = "LevelOverrides.json";
     private static string _cachedSoundsFolderPath;
 
     private static string GetCustomSoundsFolder()
@@ -30,6 +31,11 @@ public static class FileManagement
     public static string GetSoundPackPath()
     {
         return Path.Combine(GetModFolder(), SoundPackName);
+    }
+    
+    public static string GetLevelOverridesPath()
+    {
+        return Path.Combine(GetModFolder(), LevelOverridesName);
     }
 
     private static string GetModFolder()

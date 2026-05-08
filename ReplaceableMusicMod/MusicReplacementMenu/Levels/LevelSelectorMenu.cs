@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using MusicReplacer.LevelMusic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -36,6 +38,14 @@ public class LevelSelectorMenu : MonoBehaviour
         ClearLevelButtons();
     }
 
+    private void OnEnable()
+    {
+        if (_episodeButtons != null)
+        {
+            UpdateEpisodeOverrideCheck();
+        }
+    }
+
     private void OnDisable()
     {
         StopChoosingLevel();
@@ -63,8 +73,8 @@ public class LevelSelectorMenu : MonoBehaviour
         {
             UIController.HandleCursor(ref _chosenLevel, _levelButtons.Count, 1, 2, _allowbuttonscycle: false, UIFooter.PREDEFINEDTYPE.GENERIC_VALIDATE, delegate
             {
-                gameObject.SetActive(false);
                 menu.levelEditor.ShowWindow(_levelButtons[_chosenLevel].level);
+                gameObject.SetActive(false);
             }, StopChoosingLevel);
             if (_chosenLevel != _lastChosenLevel)
             {
@@ -104,6 +114,17 @@ public class LevelSelectorMenu : MonoBehaviour
         _lastChosenLevel = _chosenLevel;
     }
 
+    private void UpdateEpisodeOverrideCheck()
+    {
+        var episodes = _episodeButtons;
+        if (episodes == null)
+            return;
+        foreach (var episodeButton in episodes)
+        {
+            episodeButton.overrideIndicator.SetActive(GetEpisodeHasOverride(episodeButton.episode));
+        }
+    }
+
     private void OnClickEpisode(int buttonIndex)
     {
         StartChoosingLevel(buttonIndex);
@@ -126,7 +147,35 @@ public class LevelSelectorMenu : MonoBehaviour
         
         Plugin.Logger.LogWarning("Failed to find asset name for episode ID " + episodeUid);
         return null;
+    }
 
+    private static bool GetEpisodeHasOverride(EpisodeDefinition episodeDef)
+    {
+        var episodes = GameController.Instance.GetLevelsDefinitions(episodeDef.UID);
+        foreach (var level in episodes)
+        {
+            if (GetLevelHasOverride(level))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    
+    private static bool GetLevelHasOverride(LevelDefinition levelDef)
+    {
+        var defaultData = LevelRipper.GetLevelMusicData(levelDef.level);
+        var moddedData = LevelOverrideManager.Data.GetLevelData(levelDef.level);
+        
+        if (moddedData.defaultMusic != 0 && moddedData.defaultMusic != defaultData.DefaultMusic)
+            return true;
+        if (moddedData.arenaMusic != 0 && moddedData.arenaMusic != defaultData.ArenaMusic)
+            return true;
+        if (moddedData.triggerReplacements is { Count: > 0 })
+            return true;
+        
+        return false;
     }
 
     private void ClearLevelButtons()
@@ -170,6 +219,22 @@ public class LevelSelectorMenu : MonoBehaviour
             text.text = GameController.Instance.GetMissionNameText(level.level);
             text.color = Color.white;
             
+            var overrideGo = new GameObject("OverrideText");
+            var overrideRect = overrideGo.AddComponent<RectTransform>();
+            overrideRect.SetParent(rect);
+            overrideRect.localScale = Vector3.one;
+            overrideRect.anchorMin = Vector2.zero;
+            overrideRect.anchorMax = Vector2.one;
+            overrideRect.offsetMin = new Vector2(0, -100);
+            overrideRect.offsetMax = new Vector2(0, -40);
+            overrideRect.localPosition += Vector3.down * 190;
+            var overrideText = overrideGo.AddComponent<Text>();
+            overrideText.font = MusicMenuBuilder.ButtonFont;
+            overrideText.fontSize = 40;
+            overrideText.alignment = TextAnchor.UpperCenter;
+            overrideText.text = "HAS CUSTOM OVERRIDE";
+            overrideText.color = Color.yellow;
+            
             var descGo = new GameObject("Description");
             var descRect = descGo.AddComponent<RectTransform>();
             descRect.SetParent(rect);
@@ -185,12 +250,14 @@ public class LevelSelectorMenu : MonoBehaviour
             desc.text = TextsController.Instance.GetText(
                 GameController.Instance.GetLevelDescriptionTextId(level.level));
             desc.color = Color.white;
-
+            
+            overrideGo.SetActive(GetLevelHasOverride(level));
             
             _levelButtons.Add(new LevelButton
             {
                 level = level,
-                background = background
+                background = background,
+                overrideIndicator = overrideGo
             });
         }
     }
@@ -204,6 +271,9 @@ public class LevelSelectorMenu : MonoBehaviour
         foreach (var episode in episodes)
         {
             if (episode.UID < 0)
+                continue;
+            
+            if (episode.UID == 11)
                 continue;
             
             var button = new GameObject("episode " + episode.UID);
@@ -259,13 +329,34 @@ public class LevelSelectorMenu : MonoBehaviour
             text.text = TextsController.Instance.GetText(GameController.Instance.GetEpisodeNumberTextId(episode.UID));
             text.color = Color.black;
             
+            var overrideTextObj = new GameObject("OverrideText");
+            var overrideTextRect = overrideTextObj.AddComponent<RectTransform>();
+            overrideTextRect.SetParent(button.transform);
+            overrideTextRect.localScale = Vector3.one;
+            overrideTextRect.localPosition = Vector3.zero;
+            overrideTextRect.anchorMin = Vector2.zero;
+            overrideTextRect.anchorMax = Vector2.one;
+            overrideTextRect.pivot = new Vector2(0.5f, 0);
+            overrideTextRect.offsetMin = new Vector2(0, -60);
+            overrideTextRect.offsetMax = new Vector2(0, -15);
+            overrideTextRect.localPosition += Vector3.down * 390;
+            var overrideText = overrideTextObj.AddComponent<Text>();
+            overrideText.font = MusicMenuBuilder.ButtonFont;
+            overrideText.fontSize = 35;
+            overrideText.alignment = TextAnchor.UpperCenter;
+            overrideText.text = "HAS CUSTOM OVERRIDE";
+            overrideText.color = Color.yellow;
+            
             _episodeButtons.Add(new EpisodeButton
             {
                 background = bg,
                 uid = episode.UID,
-                episode = episode
+                episode = episode,
+                overrideIndicator = overrideTextObj
             });
         }
+
+        UpdateEpisodeOverrideCheck();
     }
 
     private class EpisodeButton
@@ -273,11 +364,13 @@ public class LevelSelectorMenu : MonoBehaviour
         public Image background;
         public int uid;
         public EpisodeDefinition episode;
+        public GameObject overrideIndicator;
     }
     
     private class LevelButton
     {
         public Image background;
         public LevelDefinition level;
+        public GameObject overrideIndicator;
     }
 }

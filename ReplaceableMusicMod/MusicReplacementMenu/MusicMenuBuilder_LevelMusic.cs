@@ -86,7 +86,7 @@ public static partial class MusicMenuBuilder
         levelEditorRect.anchorMin = Vector2.zero;
         levelEditorRect.anchorMax  = Vector2.one;
         levelEditorRect.anchoredPosition += new Vector2(-800, 300);
-        levelEditorRect.sizeDelta += new Vector2(-400, -600);
+        levelEditorRect.sizeDelta += new Vector2(-400, -400);
         levelEditorObj.AddComponent<Image>().color = new Color(0.05f, 0.03f, 0.03f);
         var editLayout = levelEditorObj.AddComponent<VerticalLayoutGroup>();
         editLayout.childScaleHeight = false;
@@ -99,6 +99,29 @@ public static partial class MusicMenuBuilder
         var levelEditor = levelEditorObj.AddComponent<LevelEditorMenu>();
         levelEditor.rect = levelEditorRect;
         
+        // 3. MUSIC SWAP POPUP
+        
+        var musicSwapObj = new GameObject("music swap popup");
+        var musicSwapRect = musicSwapObj.AddComponent<RectTransform>();
+        musicSwapRect.SetParent(rootRect);
+        musicSwapRect.localScale = Vector3.one;
+        musicSwapRect.anchorMin = Vector2.zero;
+        musicSwapRect.anchorMax  = Vector2.one;
+        musicSwapRect.anchoredPosition += new Vector2(-800, 300);
+        musicSwapRect.sizeDelta += new Vector2(-300, -100);
+        musicSwapObj.AddComponent<Image>().color = new Color(0.05f, 0.03f, 0.03f);
+        var swapLayout = musicSwapObj.AddComponent<VerticalLayoutGroup>();
+        swapLayout.childScaleHeight = false;
+        swapLayout.childControlHeight = false;
+        swapLayout.childForceExpandWidth = true;
+        swapLayout.childForceExpandHeight = false;
+        swapLayout.padding = new RectOffset(50, 50, 50, 50);
+        swapLayout.spacing = 40;
+
+        var musicSwapper = musicSwapObj.AddComponent<MusicSwapPopup>();
+        musicSwapper.rect = musicSwapRect;
+        levelEditor.swap = musicSwapper;
+        
         // Finalize
         var levelMusicMenu = rootPanel.AddComponent<LevelMusicMenu>();
         levelMusicMenu.levelSelector = levelSelectorComponent;
@@ -106,8 +129,10 @@ public static partial class MusicMenuBuilder
 
         levelSelectorComponent.menu = levelMusicMenu;
         levelEditor.menu = levelMusicMenu;
+        musicSwapper.menu = levelMusicMenu;
         
         levelEditor.gameObject.SetActive(false);
+        musicSwapper.gameObject.SetActive(false);
         
         return levelMusicMenu;
     }

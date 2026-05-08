@@ -6,6 +6,18 @@ namespace MusicReplacer.ReplacementSystem;
 
 public static class MusicPreviewUtils
 {
+    public static IEnumerator PreviewEClip(audioSelectionData.eCLIP clip, bool playOriginal, ITaskResult<MusicPreview> result)
+    {
+        if (playOriginal)
+        {
+            CobraSoundReplacer.API.PlayOriginalUtils.PlayOriginalForNextSoundEvent();
+        }
+        var playingAudio = AudioController.Instance.PlaySound(clip);
+        var preview = new MusicPreview(playingAudio, false);
+        result.SetResult(preview);
+        yield return null;
+    }
+    
     public static IEnumerator PreviewCurrentMusic(MusicSound music, bool playOriginal, ITaskResult<MusicPreview> result)
     {
         CAudio.CPlayingAudioData playingAudio;
