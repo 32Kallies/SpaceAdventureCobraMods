@@ -13,7 +13,7 @@ public static class MusicProcessor
     private static Dictionary<string, MusicSound> _musicSoundsByLoadName;
     private static List<audioSelectionData.eCLIP> _musicEClips;
     private static Dictionary<audioSelectionData.eCLIP, string> _loadNameByEClip;
-    // private static Dictionary<audioSelectionData.eCLIP, MusicSound> _musicSoundsByEClip;
+    private static Dictionary<audioSelectionData.eCLIP, MusicSound> _musicSoundsByEClip;
 
     private static Dictionary<MusicCategory, List<MusicSound>> _musicByCategory;
     
@@ -96,20 +96,50 @@ public static class MusicProcessor
 
             list.Add(sound);
         }
-
-        /*
+        
         _musicSoundsByEClip = new Dictionary<audioSelectionData.eCLIP, MusicSound>();
-        foreach (var eClip in _musicEClips)
+        foreach (var musicSound in _musicSounds)
         {
-            var soundName = AudioController.Audio.asd.getSoundName(eClip);
-            if ()
+            _musicSoundsByEClip[musicSound.EClip] = musicSound;
         }
-        */
+    }
+
+    public static bool TryGetMusicSoundForEClip(audioSelectionData.eCLIP clip, out MusicSound sound)
+    {
+        return _musicSoundsByEClip.TryGetValue(clip, out sound);
     }
 
     public static IEnumerable<MusicSound> GetMusicForCategory(MusicCategory category)
     {
         return _musicByCategory[category];
+    }
+    
+    public static IEnumerable<(MusicCategory category, MusicSound sound)> GetAllMusic(bool ignoreUnused)
+    {
+        foreach (var category in _musicByCategory)
+        {
+            if (ignoreUnused && category.Key == MusicCategory.Unused)
+                continue;
+            foreach (var music in category.Value)
+            {
+                yield return (category.Key, music);
+            }
+        }
+    }
+    
+    public static string GetNameForCategory(MusicCategory category)
+    {
+        if (category == MusicCategory.SnowCliff)
+        {
+            return "Snow_Cliff";
+        }
+
+        if (category == MusicCategory.Unused)
+        {
+            return "Unused / Broken";
+        }
+        
+        return category.ToString();
     }
 
     public static string GetLoadNameForEClip(audioSelectionData.eCLIP clip)

@@ -13,6 +13,7 @@ public class MusicSwapPopup : MonoBehaviour
 {
     public LevelMusicMenu menu;
     public RectTransform rect;
+    public EClipChooserMenu eClipChooser;
     
     private readonly List<MusicEditorElementBase> _elements = [];
     private readonly List<ISelectableElement> _selectables = [];
@@ -28,6 +29,9 @@ public class MusicSwapPopup : MonoBehaviour
     private void Update()
     {
         if (_selectables.Count == 0)
+            return;
+
+        if (eClipChooser.IsOpen)
             return;
         
         UIController.HandleCursor(ref _mainChoice, _selectables.Count, 1, 2, _allowbuttonscycle: false, UIFooter.PREDEFINEDTYPE.GENERIC_VALIDATE, delegate { _selectables[_mainChoice].Interact(); },
@@ -57,9 +61,9 @@ public class MusicSwapPopup : MonoBehaviour
         AddElement(LabelElement.Create("Default: " + MusicProcessor.GetLoadNameForEClip(music.defaultClip), 60, 100));
         
         // Buttons
-        AddElement(ButtonElement.Create("Set Music Override", () => SetClip(audioSelectionData.eCLIP.MUS_MAINTHEME), 80));
-        AddElement(ButtonElement.Create("Preview Current", () => PreviewMusic(false), 80));
-        AddElement(ButtonElement.Create("Preview Default", () => PreviewMusic(true), 80));
+        AddElement(ButtonElement.Create("Change Music Clip", () => eClipChooser.Show(music), 80));
+        AddElement(ButtonElement.Create("Preview Current Sound", () => PreviewMusic(false), 80));
+        AddElement(ButtonElement.Create("Preview Default Sound", () => PreviewMusic(true), 80));
         AddElement(ButtonElement.Create("Reset to Default", ResetToDefault, 80));
         AddElement(ButtonElement.Create("Return & Save", HideWindow, 80));
 
@@ -71,7 +75,7 @@ public class MusicSwapPopup : MonoBehaviour
         }
     }
     
-    private void Refresh()
+    public void Refresh()
     {
         if (_activeMusic == null)
         {
@@ -91,27 +95,10 @@ public class MusicSwapPopup : MonoBehaviour
 
     private void SetClip(audioSelectionData.eCLIP newClip)
     {
-        var data = LevelOverrideManager.Data.GetLevelData(_activeMusic.level);
-        var pointer = _activeMusic.pointer;
-        switch (pointer.GetCategory())
-        {
-            case SwappableMusic.MusicCategory.Ambient:
-                data.defaultMusic = (int)newClip;
-                break;
-            case SwappableMusic.MusicCategory.Battle:
-                data.arenaMusic = (int)newClip;
-                break;
-            case SwappableMusic.MusicCategory.Trigger:
-                data.GetTriggerReplacements()[pointer.GetTriggerId()] = (int)newClip;
-                break;
-            default:
-                Plugin.Logger.LogWarning("Undefined music category: " + pointer.GetCategory());
-                break;
-        }
+        _activeMusic.SetClip(newClip);
 
         _activeMusic.overrideClip = newClip;
         Refresh();
-        MusicMenuBuilder.ShowRestartRequiredWarning();
     }
 
     private void PreviewMusic(bool originalSound)

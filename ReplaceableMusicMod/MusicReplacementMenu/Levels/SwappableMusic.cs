@@ -1,3 +1,5 @@
+using MusicReplacer.LevelMusic;
+
 namespace MusicReplacer.MusicReplacementMenu.Levels;
 
 public class SwappableMusic
@@ -17,12 +19,30 @@ public class SwappableMusic
         return current;
     }
 
+    public void SetClip(audioSelectionData.eCLIP newClip)
+    {
+        overrideClip = newClip;
+        var data = LevelOverrideManager.Data.GetLevelData(level);
+        switch (pointer.GetCategory())
+        {
+            case MusicCategory.Ambient:
+                data.defaultMusic = (int)newClip;
+                break;
+            case MusicCategory.Battle:
+                data.arenaMusic = (int)newClip;
+                break;
+            case MusicCategory.Trigger:
+                data.GetTriggerReplacements()[pointer.GetTriggerId()] = (int)newClip;
+                break;
+            default:
+                Plugin.Logger.LogWarning("Undefined music category: " + pointer.GetCategory());
+                break;
+        }
+    }
+
     public class MusicPointer
     {
-        private MusicPointer()
-        {
-            
-        }
+        private MusicPointer() { }
 
         public static MusicPointer GetAmbient()
         {

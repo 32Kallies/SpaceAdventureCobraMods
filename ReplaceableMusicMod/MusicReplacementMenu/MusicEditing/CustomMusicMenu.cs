@@ -112,23 +112,8 @@ public class CustomMusicMenu : MonoBehaviour
         StartCoroutine(SetScrollToTopWithDelay());
         _mainChoice = 0;
         OnChoiceChange();
-        categoryText.text = $"[←] Category: {GetNameForCategory(category)} [→]";
+        categoryText.text = $"[←] Category: {MusicProcessor.GetNameForCategory(category)} [→]";
         _selectedCategory = category;
-    }
-
-    private static string GetNameForCategory(MusicCategory category)
-    {
-        if (category == MusicCategory.SnowCliff)
-        {
-            return "Snow Cliff";
-        }
-
-        if (category == MusicCategory.Unused)
-        {
-            return "Unused / Broken";
-        }
-        
-        return category.ToString();
     }
 
     private IEnumerator SetScrollToTopWithDelay()

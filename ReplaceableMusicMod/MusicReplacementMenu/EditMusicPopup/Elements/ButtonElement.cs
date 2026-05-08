@@ -12,8 +12,8 @@ public class ButtonElement : MusicEditorElementBase, ISelectableElement
     private static readonly Color NormalTextColor = new(1, 1, 1);
     private static readonly Color HighlightedTextColor = new(0, 0, 0);
 
-    private Image _image;
-    private Text _text;
+    public Image Image { get; private set; }
+    public Text Text { get; private set; }
 
     private Action _onUse;
 
@@ -42,8 +42,8 @@ public class ButtonElement : MusicEditorElementBase, ISelectableElement
         
         // behaviour
         var buttonElement = element.gameObject.AddComponent<ButtonElement>();
-        buttonElement._text = text;
-        buttonElement._image = graphic;
+        buttonElement.Text = text;
+        buttonElement.Image = graphic;
         buttonElement._onUse = onUse;
         
         return buttonElement;
@@ -51,14 +51,14 @@ public class ButtonElement : MusicEditorElementBase, ISelectableElement
 
     public void Select()
     {
-        _image.color = HighlightedColor;
-        _text.color = HighlightedTextColor;
+        Image.color = HighlightedColor;
+        Text.color = HighlightedTextColor;
     }
 
     public void Deselect()
     {
-        _image.color = NormalColor;
-        _text.color = NormalTextColor;
+        Image.color = NormalColor;
+        Text.color = NormalTextColor;
     }
 
     public void Interact()

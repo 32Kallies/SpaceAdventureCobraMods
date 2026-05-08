@@ -122,6 +122,72 @@ public static partial class MusicMenuBuilder
         musicSwapper.rect = musicSwapRect;
         levelEditor.swap = musicSwapper;
         
+        // 4. ECLIP CHOOSER MENU
+        
+        var eclipChooserWindow = new GameObject("choose eclips window");
+        var eclipChooserRect = eclipChooserWindow.AddComponent<RectTransform>();
+        eclipChooserRect.SetParent(rootRect);
+        eclipChooserRect.localScale = Vector3.one;
+        eclipChooserRect.anchoredPosition = new Vector2(0, 0);
+        eclipChooserRect.sizeDelta = new Vector2(4000, 2800);
+        eclipChooserRect.localPosition += new Vector3(900, -800, 0);
+        eclipChooserWindow.AddComponent<Image>().color = new Color(0.05f, 0.03f, 0.03f);
+
+        var eclipChooserHeader = new GameObject("Text").AddComponent<RectTransform>();
+        eclipChooserHeader.SetParent(eclipChooserRect);
+        eclipChooserHeader.localScale = Vector3.one;
+        eclipChooserHeader.anchorMin = new Vector2(0, 1);
+        eclipChooserHeader.anchorMax = Vector2.one;
+        eclipChooserHeader.offsetMin = new Vector2(0, -200);
+        eclipChooserHeader.offsetMax = Vector2.zero;
+        var eclipChooserText = eclipChooserHeader.gameObject.AddComponent<Text>();
+        eclipChooserText.font = ButtonFont;
+        eclipChooserText.fontSize = 100;
+        eclipChooserText.alignment = TextAnchor.MiddleCenter;
+
+        var eclipChooserViewport = new GameObject("Viewport").AddComponent<RectTransform>();
+        eclipChooserViewport.SetParent(eclipChooserRect);
+        eclipChooserViewport.localScale = Vector3.one;
+        eclipChooserViewport.anchorMin = Vector2.zero;
+        eclipChooserViewport.anchorMax = Vector2.one;
+        eclipChooserViewport.offsetMin = Vector2.zero;
+        eclipChooserViewport.offsetMax = new Vector2(0, -200);
+
+        eclipChooserViewport.gameObject.AddComponent<Image>();
+        eclipChooserViewport.gameObject.AddComponent<Mask>().showMaskGraphic = false;
+
+        var eclipChooserContent = new GameObject("Content").AddComponent<RectTransform>();
+        eclipChooserContent.SetParent(eclipChooserViewport);
+        eclipChooserContent.localScale = Vector3.one;
+        eclipChooserContent.anchorMin = Vector2.zero;
+        eclipChooserContent.anchorMax = Vector2.one;
+        eclipChooserContent.pivot = new Vector2(0.5f, 1);
+        eclipChooserContent.offsetMin = Vector2.zero;
+        eclipChooserContent.offsetMax = Vector2.zero;
+        eclipChooserContent.gameObject.AddComponent<ContentSizeFitter>().verticalFit =
+            ContentSizeFitter.FitMode.PreferredSize;
+
+        var eclipChooserLayout = eclipChooserContent.gameObject.AddComponent<GridLayoutGroup>();
+        eclipChooserLayout.childAlignment = TextAnchor.UpperCenter;
+        eclipChooserLayout.cellSize = new Vector2(500, 400);
+        eclipChooserLayout.spacing = new Vector2(25, 25);
+        eclipChooserLayout.padding = new RectOffset(50, 50, 50, 50);
+        eclipChooserLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+        eclipChooserLayout.constraintCount = EClipChooserMenu.ElementsPerRow;
+
+        var eclipScrollRect = eclipChooserWindow.gameObject.AddComponent<ScrollRect>();
+        eclipScrollRect.content = eclipChooserContent;
+        eclipScrollRect.horizontal = false;
+        eclipScrollRect.vertical = true;
+        eclipScrollRect.viewport = eclipChooserViewport;
+        eclipScrollRect.scrollSensitivity = 50;
+        eclipScrollRect.movementType = ScrollRect.MovementType.Clamped;
+        
+        var eclipChooser = eclipChooserWindow.AddComponent<EClipChooserMenu>();
+        eclipChooser.content = eclipChooserContent;
+        eclipChooser.header = eclipChooserText;
+        eclipChooser.scrollRect = eclipScrollRect;
+        
         // Finalize
         var levelMusicMenu = rootPanel.AddComponent<LevelMusicMenu>();
         levelMusicMenu.levelSelector = levelSelectorComponent;
@@ -130,9 +196,13 @@ public static partial class MusicMenuBuilder
         levelSelectorComponent.menu = levelMusicMenu;
         levelEditor.menu = levelMusicMenu;
         musicSwapper.menu = levelMusicMenu;
+        eclipChooser.menu = levelMusicMenu;
+
+        musicSwapper.eClipChooser = eclipChooser;
         
         levelEditor.gameObject.SetActive(false);
         musicSwapper.gameObject.SetActive(false);
+        eclipChooser.gameObject.SetActive(false);
         
         return levelMusicMenu;
     }
