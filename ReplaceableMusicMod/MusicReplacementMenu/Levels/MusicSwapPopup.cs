@@ -48,17 +48,17 @@ public class MusicSwapPopup : MonoBehaviour
         gameObject.SetActive(true);
 
         // Header
-        AddElement(LabelElement.Create($"Music Data for {music.levelName} - {music.displayText}", 130));
-        AddElement(LabelElement.Create("Level: " + music.levelName, 50, 60));
+        AddElement(LabelElement.Create($"Music Data for {music.LevelName} - {music.DisplayText}", 130));
+        AddElement(LabelElement.Create("Level: " + music.LevelName, 50, 60));
         
         // Info
-        var currentMusicName = "Current: " + MusicProcessor.GetLoadNameForEClip(music.GetCurrentClip());
-        if (music.defaultClip == music.GetCurrentClip())
+        var currentMusicName = "Current: " + MusicProcessor.GetFriendlyNameForEClip(music.GetCurrentClip());
+        if (music.DefaultClip == music.GetCurrentClip())
         {
             currentMusicName += " (<color=#FFA000>DEFAULT</color>)";
         }
-        AddElement(LabelElement.Create(currentMusicName, 60, 100));
-        AddElement(LabelElement.Create("Default: " + MusicProcessor.GetLoadNameForEClip(music.defaultClip), 60, 100));
+        AddElement(LabelElement.Create(currentMusicName, 80));
+        AddElement(LabelElement.Create("Default: " + MusicProcessor.GetFriendlyNameForEClip(music.DefaultClip), 60, 100));
         
         // Buttons
         AddElement(ButtonElement.Create("Change Music Clip", () => eClipChooser.Show(music), 80));
@@ -96,8 +96,6 @@ public class MusicSwapPopup : MonoBehaviour
     private void SetClip(audioSelectionData.eCLIP newClip)
     {
         _activeMusic.SetClip(newClip);
-
-        _activeMusic.overrideClip = newClip;
         Refresh();
     }
 
@@ -119,9 +117,9 @@ public class MusicSwapPopup : MonoBehaviour
     {
         _startingUpPreview = true;
         var taskResult = new TaskResult<MusicPreviewUtils.MusicPreview>();
-        var music = _activeMusic.defaultClip;
-        if (!originalSound && _activeMusic.overrideClip != audioSelectionData.eCLIP.NONE)
-            music = _activeMusic.overrideClip;
+        var music = _activeMusic.DefaultClip;
+        if (!originalSound && _activeMusic.OverrideClip != audioSelectionData.eCLIP.NONE)
+            music = _activeMusic.OverrideClip;
         yield return MusicPreviewUtils.PreviewEClip(music, false, taskResult);
         _preview = taskResult.GetResult();
         _startingUpPreview = false;
@@ -142,6 +140,7 @@ public class MusicSwapPopup : MonoBehaviour
         StopMusicPreview();
         menu.levelEditor.Refresh();
         LevelOverrideManager.SaveChanges();
+        menu.levelEditor.RestoreState();
     }
 
     public bool GetIsShown()

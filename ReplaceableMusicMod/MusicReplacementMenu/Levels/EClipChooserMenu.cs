@@ -75,7 +75,7 @@ public class EClipChooserMenu : MonoBehaviour
         
         gameObject.SetActive(true);
         
-        header.text = $"{music.levelName} - {music.displayText}";
+        header.text = $"{music.LevelName} - {music.DisplayText}";
         
         DrawWindow(music);
         

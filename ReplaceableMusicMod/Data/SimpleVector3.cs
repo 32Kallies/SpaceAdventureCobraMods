@@ -18,4 +18,6 @@ public struct SimpleVector3
         Y = y;
         Z = z;
     }
+    
+    public Vector3 ToVector3() => new(X, Y, Z);
 }

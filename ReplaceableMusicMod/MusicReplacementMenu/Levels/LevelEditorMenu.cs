@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using MusicReplacer.LevelMusic;
 using MusicReplacer.MusicReplacementMenu.EditMusicPopup;
 using MusicReplacer.MusicReplacementMenu.EditMusicPopup.Elements;
+using MusicReplacer.MusicReplacementMenu.Levels.Triggers;
 using MusicReplacer.ReplacementSystem;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace MusicReplacer.MusicReplacementMenu.Levels;
 
@@ -18,9 +20,15 @@ public class LevelEditorMenu : MonoBehaviour
     private readonly List<ISelectableElement> _selectables = [];
 
     private LevelDefinition _currentLevel;
+    private TriggerMap _map;
     
     private int _mainChoice;
     private int _previousChoice;
+
+    private static readonly SaveState SavedState = new();
+
+    private bool _confirmReset;
+    private Text _resetButtonText;
     
     private void Update()
     {
@@ -49,6 +57,7 @@ public class LevelEditorMenu : MonoBehaviour
     public void ShowWindow(LevelDefinition level)
     {
         _currentLevel = level;
+        _confirmReset = false;
         
         if (_elements.Count > 0)
             ClearWindow();
@@ -63,34 +72,42 @@ public class LevelEditorMenu : MonoBehaviour
         description.text.color = new Color(1, 0.75f, 0.53f);
         AddElement(description);
 
-        var ambientMusic = GetSwappableAmbientMusic(level);
-        var battleMusic = GetSwappableBattleMusic(level);
+        var ambientMusic = SwappableMusic.GetSwappableAmbientMusic(level);
+        var battleMusic = SwappableMusic.GetSwappableBattleMusic(level);
         
         // Info
         AddElement(LabelElement.Create("AMBIENT MUSIC", 80, 100));
-        var currentAmbientText = "Current: " + MusicProcessor.GetLoadNameForEClip(ambientMusic.GetCurrentClip());
-        if (ambientMusic.defaultClip == ambientMusic.GetCurrentClip())
+        var currentAmbientText = "Current: " + MusicProcessor.GetFriendlyNameForEClip(ambientMusic.GetCurrentClip());
+        if (ambientMusic.DefaultClip == ambientMusic.GetCurrentClip())
         {
             currentAmbientText += " (<color=#FFA000>DEFAULT</color>)";
         }
         AddElement(LabelElement.Create(currentAmbientText, 50, 60));
-        AddElement(LabelElement.Create("Default: " + MusicProcessor.GetLoadNameForEClip(ambientMusic.defaultClip), 50, 60));
+        AddElement(LabelElement.Create("Default: " + MusicProcessor.GetFriendlyNameForEClip(ambientMusic.DefaultClip), 50, 60));
         AddElement(ButtonElement.Create("Change ambient music", () => SwapMusic(ambientMusic), 80));
         
         AddElement(LabelElement.Create("BATTLE MUSIC", 80, 100));
-        var currentBattleText = "Current: " + MusicProcessor.GetLoadNameForEClip(battleMusic.GetCurrentClip());
-        if (battleMusic.defaultClip == battleMusic.GetCurrentClip())
+        var currentBattleText = "Current: " + MusicProcessor.GetFriendlyNameForEClip(battleMusic.GetCurrentClip());
+        if (battleMusic.DefaultClip == battleMusic.GetCurrentClip())
         {
             currentBattleText += " (<color=#FFA000>DEFAULT</color>)";
         }
         AddElement(LabelElement.Create(currentBattleText, 50, 60));
-        AddElement(LabelElement.Create("Default: " + MusicProcessor.GetLoadNameForEClip(battleMusic.defaultClip), 50, 60));
+        AddElement(LabelElement.Create("Default: " + MusicProcessor.GetFriendlyNameForEClip(battleMusic.DefaultClip), 50, 60));
         AddElement(ButtonElement.Create("Change battle music", () => SwapMusic(battleMusic), 80));
 
         AddElement(LabelElement.Create("LEVEL TRIGGER MAP", 90));
-        AddElement(LabelElement.Create("[VISUAL LEVEL TRIGGER MAP GOES HERE]", 90));
-        AddElement(LabelElement.Create("Selected trigger ID: N/A", 50, 60));
-        AddElement(ButtonElement.Create("RESET TRIGGERS", () => Plugin.Logger.LogMessage("C"), 80));
+        _map = TriggerMap.Create(level);
+        AddElement(_map);
+        var selectedTriggerText = LabelElement.Create("PLACEHOLDER", 50, 60);
+        AddElement(selectedTriggerText);
+        _map.SetUp(selectedTriggerText.text, swap, this);
+        var resetTriggers = ButtonElement.Create("RESET ALL TRIGGERS", ResetAllTriggers, 40);
+        resetTriggers.RectTransform.sizeDelta = new Vector2(
+            resetTriggers.RectTransform.sizeDelta.x,
+            70);
+        _resetButtonText = resetTriggers.Text;
+        AddElement(resetTriggers);
 
         _mainChoice = 0;
         _previousChoice = 0;
@@ -100,39 +117,22 @@ public class LevelEditorMenu : MonoBehaviour
         }
     }
 
-    private SwappableMusic GetSwappableAmbientMusic(LevelDefinition definition)
+    private void ResetAllTriggers()
     {
-        var music = GetSwappableMusicBase(definition);
-        music.displayText = "Ambient Music";
-        music.defaultClip = (audioSelectionData.eCLIP)LevelRipper.GetLevelMusicData(definition.level).DefaultMusic;
-        music.overrideClip = (audioSelectionData.eCLIP)LevelOverrideManager.Data.GetLevelData(definition.level).defaultMusic;
-        music.pointer = SwappableMusic.MusicPointer.GetAmbient();
-        return music;
-    }
-    
-    private SwappableMusic GetSwappableBattleMusic(LevelDefinition definition)
-    {
-        var music = GetSwappableMusicBase(definition);
-        music.displayText = "Battle Music";
-        music.defaultClip = (audioSelectionData.eCLIP)LevelRipper.GetLevelMusicData(definition.level).ArenaMusic;
-        music.overrideClip =
-            (audioSelectionData.eCLIP)LevelOverrideManager.Data.GetLevelData(definition.level).arenaMusic;
-        music.pointer = SwappableMusic.MusicPointer.GetBattle();
-        return music;
-    }
-
-    private SwappableMusic GetSwappableMusicBase(LevelDefinition definition)
-    {
-        var music = new SwappableMusic
+        if (!_confirmReset)
         {
-            level = definition.level,
-            levelName = GameController.Instance.GetMissionNameText(definition.level)
-        };
-        return music;
+            _resetButtonText.text = "RESET ALL TRIGGERS - PRESS AGAIN TO CONFIRM";
+            _confirmReset = true;
+            return;
+        }
+        var levelData = LevelOverrideManager.Data.GetLevelData(_currentLevel.level);
+        levelData.GetTriggerReplacements().Clear();
+        Refresh();
     }
 
     private void SwapMusic(SwappableMusic music)
     {
+        SaveCurrentState();
         swap.ShowWindow(music);
     }
     
@@ -141,6 +141,25 @@ public class LevelEditorMenu : MonoBehaviour
         menu.levelSelector.gameObject.SetActive(true);
         gameObject.SetActive(false);
         LevelOverrideManager.SaveChanges();
+    }
+
+    public void SaveCurrentState()
+    {
+        SavedState.MainChoice = _mainChoice;
+        if (_map != null)
+        {
+            SavedState.TriggerIndex = _map.GetSelectionIndex();
+        }
+    }
+
+    public void RestoreState()
+    {
+        _mainChoice = SavedState.MainChoice;
+        OnChoiceChange();
+        if (_selectables[_mainChoice] is TriggerMap map)
+        {
+            map.SetSelectionIndex(SavedState.TriggerIndex);
+        }
     }
 
     public bool GetIsShown()
@@ -189,5 +208,11 @@ public class LevelEditorMenu : MonoBehaviour
         }
 
         _elements.Add(element);
+    }
+
+    private class SaveState
+    {
+        public int MainChoice { get; set; }
+        public int TriggerIndex { get; set; }
     }
 }

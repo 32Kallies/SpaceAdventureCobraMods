@@ -4,26 +4,78 @@ namespace MusicReplacer.MusicReplacementMenu.Levels;
 
 public class SwappableMusic
 {
-    public LevelController.Level level;
-    public string levelName;
-    public string displayText;
-    public audioSelectionData.eCLIP defaultClip;
-    public audioSelectionData.eCLIP overrideClip;
-    public MusicPointer pointer;
+    public string LevelName { get; private set; }
+    public string DisplayText { get; private set; }
+    public audioSelectionData.eCLIP DefaultClip { get; private set; }
+    public audioSelectionData.eCLIP OverrideClip { get; private set; }
+    
+    private LevelController.Level _level;
+    private MusicPointer _pointer;
 
     public audioSelectionData.eCLIP GetCurrentClip()
     {
-        var current = defaultClip;
-        if (overrideClip != audioSelectionData.eCLIP.NONE)
-            current = overrideClip;
+        var current = DefaultClip;
+        if (OverrideClip != audioSelectionData.eCLIP.NONE)
+            current = OverrideClip;
         return current;
+    }
+    
+    public static SwappableMusic CreateSwappableTriggerMusic(LevelDefinition definition, LevelTrigger triggerData)
+    {
+        var overrideClip = audioSelectionData.eCLIP.NONE;
+        if (LevelOverrideManager.Data.GetLevelData(definition.level).GetTriggerReplacements().TryGetValue(triggerData.Hash.ToString(), out var clip))
+        {
+            overrideClip = (audioSelectionData.eCLIP)clip;
+        }
+        var music = new SwappableMusic
+        {
+            _level = definition.level,
+            LevelName = GameController.Instance.GetMissionNameText(definition.level),
+            DisplayText = $"Trigger {triggerData.Hash} Music",
+            DefaultClip = (audioSelectionData.eCLIP)triggerData.MusicClip,
+            OverrideClip = overrideClip,
+            _pointer = MusicPointer.GetTrigger(triggerData.Hash.ToString())
+        };
+        
+        return music;
+    }
+    
+    public static SwappableMusic GetSwappableAmbientMusic(LevelDefinition definition)
+    {
+        var music = GetSwappableMusicBase(definition);
+        music.DisplayText = "Ambient Music";
+        music.DefaultClip = (audioSelectionData.eCLIP)LevelRipper.GetLevelMusicData(definition.level).DefaultMusic;
+        music.OverrideClip = (audioSelectionData.eCLIP)LevelOverrideManager.Data.GetLevelData(definition.level).defaultMusic;
+        music._pointer = MusicPointer.GetAmbient();
+        return music;
+    }
+    
+    public static SwappableMusic GetSwappableBattleMusic(LevelDefinition definition)
+    {
+        var music = GetSwappableMusicBase(definition);
+        music.DisplayText = "Battle Music";
+        music.DefaultClip = (audioSelectionData.eCLIP)LevelRipper.GetLevelMusicData(definition.level).ArenaMusic;
+        music.OverrideClip =
+            (audioSelectionData.eCLIP)LevelOverrideManager.Data.GetLevelData(definition.level).arenaMusic;
+        music._pointer = MusicPointer.GetBattle();
+        return music;
+    }
+
+    private static SwappableMusic GetSwappableMusicBase(LevelDefinition definition)
+    {
+        var music = new SwappableMusic
+        {
+            _level = definition.level,
+            LevelName = GameController.Instance.GetMissionNameText(definition.level)
+        };
+        return music;
     }
 
     public void SetClip(audioSelectionData.eCLIP newClip)
     {
-        overrideClip = newClip;
-        var data = LevelOverrideManager.Data.GetLevelData(level);
-        switch (pointer.GetCategory())
+        OverrideClip = newClip;
+        var data = LevelOverrideManager.Data.GetLevelData(_level);
+        switch (_pointer.GetCategory())
         {
             case MusicCategory.Ambient:
                 data.defaultMusic = (int)newClip;
@@ -32,10 +84,13 @@ public class SwappableMusic
                 data.arenaMusic = (int)newClip;
                 break;
             case MusicCategory.Trigger:
-                data.GetTriggerReplacements()[pointer.GetTriggerId()] = (int)newClip;
+                if (newClip == audioSelectionData.eCLIP.NONE)
+                    data.GetTriggerReplacements().Remove(_pointer.GetTriggerId());
+                else
+                    data.GetTriggerReplacements()[_pointer.GetTriggerId()] = (int)newClip;
                 break;
             default:
-                Plugin.Logger.LogWarning("Undefined music category: " + pointer.GetCategory());
+                Plugin.Logger.LogWarning("Undefined music category: " + _pointer.GetCategory());
                 break;
         }
     }

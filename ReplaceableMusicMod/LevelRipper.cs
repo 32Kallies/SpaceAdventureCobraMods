@@ -23,6 +23,7 @@ public static class LevelRipper
             try
             {
                 var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<LevelMusicData>(File.ReadAllText(file));
+                RegenerateHashes(obj);
                 dictionary.Add(obj.LevelId, obj);
             }
             catch (Exception e)
@@ -31,10 +32,18 @@ public static class LevelRipper
             }
         }
 
-        _data = new GameLevelData()
+        _data = new GameLevelData
         {
             Levels = dictionary
         };
+    }
+
+    private static void RegenerateHashes(LevelMusicData data)
+    {
+        foreach (var trigger in data.LevelTriggers)
+        {
+            trigger.Value.Hash = GenerateTriggerHash(trigger.Value.Center.ToVector3(), trigger.Value.Size.ToVector3());
+        }
     }
 
     public static LevelMusicData GetLevelMusicData(LevelController.Level level)
@@ -104,6 +113,32 @@ public static class LevelRipper
 
     public static int GenerateTriggerHash(Vector3 center, Vector3 size)
     {
-        return HashCode.Combine(center, size);
+        int cx = Mathf.RoundToInt(center.x);
+        int cy = Mathf.RoundToInt(center.y);
+        int cz = Mathf.RoundToInt(center.z);
+
+        int sx = Mathf.RoundToInt(size.x);
+        int sy = Mathf.RoundToInt(size.y);
+        int sz = Mathf.RoundToInt(size.z);
+
+        return GetStableHash(cx, cy, cz, sx, sy, sz);
+    }
+    
+    private static int GetStableHash(int cX, int cY, int cZ, int sX, int sY, int sZ)
+    {
+        unchecked
+        {
+            int hash = 17;
+
+            hash = hash * 31 + cX.GetHashCode();
+            hash = hash * 31 + cY.GetHashCode();
+            hash = hash * 31 + cZ.GetHashCode();
+
+            hash = hash * 31 + sX.GetHashCode();
+            hash = hash * 31 + sY.GetHashCode();
+            hash = hash * 31 + sZ.GetHashCode();
+
+            return hash;
+        }
     }
 }

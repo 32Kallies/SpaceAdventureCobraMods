@@ -86,7 +86,7 @@ public static partial class MusicMenuBuilder
         levelEditorRect.anchorMin = Vector2.zero;
         levelEditorRect.anchorMax  = Vector2.one;
         levelEditorRect.anchoredPosition += new Vector2(-800, 300);
-        levelEditorRect.sizeDelta += new Vector2(-400, -400);
+        levelEditorRect.sizeDelta += new Vector2(-400, -200f);
         levelEditorObj.AddComponent<Image>().color = new Color(0.05f, 0.03f, 0.03f);
         var editLayout = levelEditorObj.AddComponent<VerticalLayoutGroup>();
         editLayout.childScaleHeight = false;

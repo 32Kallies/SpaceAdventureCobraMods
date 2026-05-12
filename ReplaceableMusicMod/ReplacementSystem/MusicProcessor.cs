@@ -151,6 +151,28 @@ public static class MusicProcessor
         Plugin.Logger.LogWarning("Failed to find LoadName for EClip: " + clip);
         return clip.ToString();
     }
+    
+    public static string GetFriendlyNameForEClip(audioSelectionData.eCLIP clip)
+    {
+        if (_musicSoundsByEClip.TryGetValue(clip, out var music))
+        {
+            var finalName = music.DisplayName;
+            if (MusicReplacementManager.ReplacementData.TryGetCustomSound(music.FileName, out var custom))
+            {
+                var customSoundName = FileManagement.GetDisplayNameForSoundPath(custom).TruncateAdvanced(16);
+                finalName += $" (<color=#7F00FF>{customSoundName}</color>)";
+            }
+            return finalName;
+        }
+        
+        Plugin.Logger.LogWarning("Failed to find LoadName for EClip: " + clip);
+        return clip.ToString();
+    }
+    
+    private static string TruncateAdvanced(this string value, int maxChars)
+    {
+        return value.Length <= maxChars ? value : value.Substring(0, maxChars) + "…";
+    }
 
     private static MusicCategory GetCategoryForSoundName(string soundName)
     {
