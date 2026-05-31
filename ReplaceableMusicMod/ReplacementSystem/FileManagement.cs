@@ -11,9 +11,11 @@ public static class FileManagement
     private const string SoundsFolderName = "Custom Music";
     private const string SoundPackName = "CustomMusicData.soundreplacements";
     private const string LevelOverridesName = "LevelOverrides.json";
+    private const string NewMusicFolderName = "New Music";
     private static string _cachedSoundsFolderPath;
+    private static string _cachedNewMusicFolderPath;
 
-    private static string GetCustomSoundsFolder()
+    public static string GetCustomSoundsFolder()
     {
         if (string.IsNullOrEmpty(_cachedSoundsFolderPath))
         {
@@ -27,6 +29,21 @@ public static class FileManagement
 
         return _cachedSoundsFolderPath;
     }
+    
+    public static string GetNewMusicFolder()
+    {
+        if (string.IsNullOrEmpty(_cachedNewMusicFolderPath))
+        {
+            _cachedNewMusicFolderPath = Path.Combine(GetModFolder(), NewMusicFolderName);
+        }
+
+        if (!Directory.Exists(_cachedNewMusicFolderPath))
+        {
+            Directory.CreateDirectory(_cachedNewMusicFolderPath);
+        }
+
+        return _cachedNewMusicFolderPath;
+    }
 
     public static string GetSoundPackPath()
     {
@@ -38,7 +55,7 @@ public static class FileManagement
         return Path.Combine(GetModFolder(), LevelOverridesName);
     }
 
-    private static string GetModFolder()
+    public static string GetModFolder()
     {
         return Path.GetDirectoryName(Plugin.Assembly.Location);
     }
@@ -67,19 +84,16 @@ public static class FileManagement
         return GetFullPathOfCustomSound(customSoundPath);
     }
 
-    public static string[] GetAllCustomSounds()
+    public static string[] GetAllSoundFilesInFolder(string folder, string relativeTo)
     {
-        var soundsFolder = GetCustomSoundsFolder();
-        var rootFolder = GetModFolder();
-
         var allowedExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             ".mp3", ".wav", ".wave", ".ogg", ".ogv", ".aiff", ".aif", ".aifc"
         };
 
-        return Directory.GetFiles(soundsFolder, "*.*", SearchOption.AllDirectories)
+        return Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories)
             .Where(f => allowedExtensions.Contains(Path.GetExtension(f)))
-            .Select(f => Path.GetRelativePath(rootFolder, f))
+            .Select(f => Path.GetRelativePath(relativeTo, f))
             .ToArray();
     }
 

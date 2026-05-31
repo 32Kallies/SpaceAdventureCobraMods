@@ -5,6 +5,7 @@ using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 using MusicReplacer.LevelMusic;
+using MusicReplacer.NewMusicSystem;
 using MusicReplacer.ReplacementSystem;
 using UnityEngine;
 
@@ -35,6 +36,7 @@ public class Plugin : BaseUnityPlugin
         LevelRipper.LoadLevelData();
         MusicReplacementManager.Register();
         LevelOverrideManager.Initialize();
+        NewMusicLoader.LoadNewMusic();
 
         Bundle = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(Assembly.Location), "Assets", "episodeassets"));
 

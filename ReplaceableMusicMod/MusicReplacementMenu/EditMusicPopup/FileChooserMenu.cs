@@ -19,10 +19,10 @@ public class FileChooserMenu : MonoBehaviour
     public MusicEditor editor;
 
     public const int ElementsPerRow = 5;
-    
+
     private int _row;
     private int _column;
-    
+
     private Vector2Int _previousChoice;
 
     private const float ScanInterval = 0.5f;
@@ -30,16 +30,17 @@ public class FileChooserMenu : MonoBehaviour
 
     private MusicSound _currentSound;
     private string[] _knownSoundPaths;
-    
+
     private void Update()
     {
-        UIController.HandleCursor(ref _row, _selectables.Count, 1, 2, _allowbuttonscycle: false, UIFooter.PREDEFINEDTYPE.GENERIC_VALIDATE, delegate
+        UIController.HandleCursor(ref _row, _selectables.Count, 1, 2, _allowbuttonscycle: false,
+            UIFooter.PREDEFINEDTYPE.GENERIC_VALIDATE, delegate
             {
                 Plugin.Logger.LogMessage("Clicked " + _row);
                 _selectables[_row][_column].Interact();
             },
             Hide, OnChoiceChange, OnChoiceChange);
-        
+
         if (Utils.GetButtonPushed(PadsController.LS_LEFT))
             MoveColumn(false);
         else if (Utils.GetButtonPushed(PadsController.LS_RIGHT))
@@ -51,14 +52,14 @@ public class FileChooserMenu : MonoBehaviour
             _timeScanAgain = Time.time + ScanInterval;
         }
     }
-    
+
     private void MoveColumn(bool right)
     {
         _column = Mathf.Clamp(_column + (right ? 1 : -1), 0, _selectables[_row].Count - 1);
         AudioController.Instance.PlaySound(audioSelectionData.eCLIP.UI_SELECTCHANGE, 0.4f);
         OnChoiceChange();
     }
-    
+
     private void ClearWindow()
     {
         foreach (var row in _elements)
@@ -70,9 +71,11 @@ public class FileChooserMenu : MonoBehaviour
                     Plugin.Logger.LogWarning("Element is null. This should not happen!");
                     continue;
                 }
+
                 Destroy(element.gameObject);
             }
         }
+
         _elements.Clear();
         _selectables.Clear();
     }
@@ -82,13 +85,13 @@ public class FileChooserMenu : MonoBehaviour
     {
         if (_elements.Count > 0)
             ClearWindow();
-        
+
         gameObject.SetActive(true);
-        
+
         header.text = sound.DisplayName;
-        
+
         DrawWindow(sound);
-        
+
         _row = 0;
         _column = 0;
         _previousChoice = new Vector2Int(0, 0);
@@ -106,23 +109,25 @@ public class FileChooserMenu : MonoBehaviour
         AddElement(ButtonElement.Create("CANCEL", Hide, 80), 0);
         AddElement(ButtonElement.Create("FOLDER", FileManagement.OpenCustomSoundsFolder, 80), 0);
         AddElement(ButtonElement.Create("RESET", () => SetCustomSound(music, null), 80), 0);
-        
+
         // Placeholders hack to align all elements
         var rowToFill = _elements.Count - 1;
         while (_elements[rowToFill].Count < ElementsPerRow)
         {
             AddElement(PlaceholderElement.Create(), rowToFill);
         }
-        
+
         int numStartingRows = _elements.Count;
 
-        _knownSoundPaths = FileManagement.GetAllCustomSounds();
+        _knownSoundPaths =
+            FileManagement.GetAllSoundFilesInFolder(FileManagement.GetCustomSoundsFolder(),
+                FileManagement.GetModFolder());
 
         if (_knownSoundPaths.Length == 0)
         {
             AddElement(LabelElement.Create("FOLDER IS EMPTY", 70), numStartingRows);
         }
-        
+
         for (int i = 0; i < _knownSoundPaths.Length; i++)
         {
             var row = i / ElementsPerRow + numStartingRows;
@@ -144,10 +149,11 @@ public class FileChooserMenu : MonoBehaviour
         {
             MusicReplacementManager.ReplacementData.SetReplacement(music, customSoundPath);
         }
+
         MusicMenuBuilder.ShowRestartRequiredWarning();
         Hide();
     }
-    
+
     private void OnChoiceChange()
     {
         if (_selectables.Count == 0)
@@ -159,14 +165,14 @@ public class FileChooserMenu : MonoBehaviour
             _column = _previousChoice.y;
             return;
         }
-        
+
         _column = Mathf.Clamp(_column, 0, _selectables[_row].Count - 1);
 
         if (!_previousChoice.Equals(new Vector2Int(_row, _column)))
         {
             _selectables[_previousChoice.x][_previousChoice.y].Deselect();
         }
-        
+
         _selectables[_row][_column].Select();
         _previousChoice = new Vector2Int(_row, _column);
 
@@ -188,27 +194,29 @@ public class FileChooserMenu : MonoBehaviour
     {
         return _selectables[row].Count;
     }
-    
+
     private void AddElement(MusicEditorElementBase element, int row)
     {
         while (_selectables.Count <= row)
         {
             _selectables.Add(new List<ISelectableElement>());
         }
+
         while (_elements.Count <= row)
         {
             _elements.Add(new List<MusicEditorElementBase>());
         }
-        
+
         element.RectTransform.SetParent(content);
         element.RectTransform.localScale = Vector3.one;
         if (element is ISelectableElement selectable)
         {
             _selectables[row].Add(selectable);
         }
+
         _elements[row].Add(element);
     }
-    
+
     private float GetVerticalNormalizedScrollPos()
     {
         var percent = 1f - (float)_row / (_selectables.Count - 1);
@@ -217,7 +225,9 @@ public class FileChooserMenu : MonoBehaviour
 
     private void Scan()
     {
-        if (!CompareCustomSoundArrays(_knownSoundPaths, FileManagement.GetAllCustomSounds()))
+        if (!CompareCustomSoundArrays(_knownSoundPaths,
+                FileManagement.GetAllSoundFilesInFolder(FileManagement.GetCustomSoundsFolder(),
+                    FileManagement.GetModFolder())))
         {
             Show(_currentSound);
         }
@@ -227,10 +237,10 @@ public class FileChooserMenu : MonoBehaviour
     {
         if (a == null || b == null)
             return false;
-        
+
         if (a.Length != b.Length)
             return false;
-        
+
         for (int i = 0; i < a.Length; i++)
         {
             if (!a[i].Equals(b[i]))
