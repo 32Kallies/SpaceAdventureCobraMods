@@ -62,8 +62,8 @@ public class MusicSwapPopup : MonoBehaviour
         
         // Buttons
         AddElement(ButtonElement.Create("Change Music Clip", () => eClipChooser.Show(music), 80));
-        AddElement(ButtonElement.Create("Preview Current Sound", () => PreviewMusic(false), 80));
-        AddElement(ButtonElement.Create("Preview Default Sound", () => PreviewMusic(true), 80));
+        AddElement(ButtonElement.Create("Preview Current Music", () => PreviewMusic(false), 80));
+        AddElement(ButtonElement.Create("Preview Default Music", () => PreviewMusic(true), 80));
         AddElement(ButtonElement.Create("Reset to Default", ResetToDefault, 80));
         AddElement(ButtonElement.Create("Return & Save", HideWindow, 80));
 
