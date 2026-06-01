@@ -24,10 +24,24 @@ public static class SoundPackRegistry
     internal static readonly Dictionary<ushort, NewSound> NewSoundData = new();
     internal static readonly Dictionary<string, audioSelectionData.eCLIP> CustomEClips = new();
     internal static readonly Dictionary<audioSelectionData.eCLIP, string> CustomEClipSounds = new();
+    internal static readonly HashSet<audioSelectionData.eCLIP> CustomEClipSet = new();
 
     private static ushort _nextFreeCustomEClipIndex = 500;
 
-    public static IEnumerator RegisterSoundPack(SoundPack pack, string containingFolderPath)
+    private static readonly List<RegisteredSoundPack> RuntimeSoundPacks = new();
+    
+    public static bool ReplacementCompleted { get; private set; }
+
+    public static void RegisterRuntimeSoundPack(SoundPack pack, string containingFolderPath)
+    {
+        if (ReplacementCompleted)
+        {
+            Plugin.Logger.LogError("Registering custom pack after audio has already been replaced");
+        }
+        RuntimeSoundPacks.Add(new RegisteredSoundPack(pack, containingFolderPath));
+    }
+
+    internal static IEnumerator RegisterSoundPack(SoundPack pack, string containingFolderPath)
     {
         if (SoundPacks.ContainsKey(pack.PackName))
         {
@@ -93,6 +107,11 @@ public static class SoundPackRegistry
             yield return RefreshPack(pack.Value);
         }
 
+        foreach (var runtimePack in RuntimeSoundPacks)
+        {
+            yield return RefreshPack(runtimePack);
+        }
+
         // Register new custom sounds into cAudio:
         
         var allClips = _cAudio.AllClip;
@@ -115,6 +134,8 @@ public static class SoundPackRegistry
         _cAudio.AllClip = newArray;
         
         Plugin.Logger.LogMessage("All audio loaded");
+        
+        ReplacementCompleted = true;
     }
 
     private static IEnumerator RefreshPack(RegisteredSoundPack pack)
@@ -218,6 +239,7 @@ public static class SoundPackRegistry
     {
         var eClip = (audioSelectionData.eCLIP)_nextFreeCustomEClipIndex++;
         CustomEClips.Add(id, eClip);
+        CustomEClipSet.Add(eClip);
         CustomEClipSounds.Add(eClip, soundName);
     }
 

@@ -13,4 +13,14 @@ public static class CustomSoundUtils
     {
         return SoundPackRegistry.CustomEClips.TryGetValue(eClipId, out eClip);
     }
+
+    public static bool IsEClipCustom(audioSelectionData.eCLIP clip)
+    {
+        return SoundPackRegistry.CustomEClipSet.Contains(clip);
+    }
+    
+    public static bool TryGetCustomSoundNameForEClip(audioSelectionData.eCLIP clip, out string soundName)
+    {
+        return SoundPackRegistry.CustomEClipSounds.TryGetValue(clip, out soundName);
+    }
 }

@@ -16,6 +16,19 @@ public static class CAudioPatcher
     {
         Plugin.StartCoroutineOnPlugin(SoundPackRegistry.OnAudioInitialized(__instance));
     }
+    
+    [HarmonyPatch(nameof(CAudio.getClip))]
+    [HarmonyPostfix]
+    public static void GetClipPatch(CAudio __instance, string clipName, ref ushort[] __result)
+    {
+        if (!CustomSoundUtils.TryGetIdForCustomSound(clipName, out ushort idx))
+            return;
+        
+        if (__result is { Length: > 0 })
+            return;
+        
+        __result = [idx];
+    }
 }
 
 [HarmonyPatch(typeof(CAudio), nameof(CAudio.play), typeof(ushort), typeof(float), typeof(float),
