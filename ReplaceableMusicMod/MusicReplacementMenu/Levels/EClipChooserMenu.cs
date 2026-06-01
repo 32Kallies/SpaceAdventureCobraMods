@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using MusicReplacer.MusicReplacementMenu.EditMusicPopup;
 using MusicReplacer.MusicReplacementMenu.EditMusicPopup.Elements;
+using MusicReplacer.NewMusicSystem;
 using MusicReplacer.ReplacementSystem;
 using UnityEngine;
 using UnityEngine.UI;
@@ -104,21 +105,22 @@ public class EClipChooserMenu : MonoBehaviour
         
         int numStartingRows = _elements.Count;
 
-        var allClips = MusicProcessor.GetAllMusic(true);
+        var allMusic = MusicProcessor.GetAllMusicByCategory(true);
+        var newMusic = NewMusicLoader.GetNewMusicClips();
 
         int i = 0;
-        foreach (var clip in allClips)
+        foreach (var musicTuple in allMusic)
         {
             var row = i / ElementsPerRow + numStartingRows;
             
             // Get requirements for display text
-            var categoryName = MusicProcessor.GetNameForCategory(clip.category);
-            var clipName = MusicProcessor.GetLoadNameForEClip(clip.sound.EClip);
-            var clipColor = GetColorHexString(clip.category);
+            var categoryName = MusicProcessor.GetNameForCategory(musicTuple.category);
+            var clipName = MusicProcessor.GetLoadNameForEClip(musicTuple.sound.EClip);
+            var clipColor = GetColorHexString(musicTuple.category);
             
             // Build display text
             var text = $"<b><color={clipColor}>{categoryName}</color></b>:{clipName}";
-            if (MusicProcessor.TryGetMusicSoundForEClip(clip.sound.EClip, out var musicSound))
+            if (MusicProcessor.TryGetMusicSoundForEClip(musicTuple.sound.EClip, out var musicSound))
             {
                 if (MusicReplacementManager.ReplacementData.TryGetCustomSound(musicSound, out var path))
                 {
@@ -127,7 +129,26 @@ public class EClipChooserMenu : MonoBehaviour
             }
             
             // Add element
-            var element = ButtonElement.Create(text, () => SetClip(music, clip.sound.EClip), 40);
+            var element = ButtonElement.Create(text, () => SetClip(music, musicTuple.sound.EClip), 40);
+            element.Text.alignment = TextAnchor.UpperLeft;
+            AddElement(element, row);
+            i++;
+        }
+        
+        foreach (var newSound in newMusic)
+        {
+            var row = i / ElementsPerRow + numStartingRows;
+            
+            // Get requirements for display text
+            var categoryName = "CUSTOM";
+            var clipName = newSound.ClipId;
+            var clipColor = "#FFA000";
+            
+            // Build display text
+            var text = $"<b><color={clipColor}>{categoryName}</color></b>:{clipName}";
+            
+            // Add element
+            var element = ButtonElement.Create(text, () => SetClip(music, newSound.CustomClip), 40);
             element.Text.alignment = TextAnchor.UpperLeft;
             AddElement(element, row);
             i++;

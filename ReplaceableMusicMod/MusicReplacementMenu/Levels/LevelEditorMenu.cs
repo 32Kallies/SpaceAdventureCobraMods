@@ -126,7 +126,7 @@ public class LevelEditorMenu : MonoBehaviour
             return;
         }
         var levelData = LevelOverrideManager.Data.GetLevelData(_currentLevel.level);
-        levelData.GetTriggerReplacements().Clear();
+        levelData.ClearTriggerReplacements();
         Refresh();
     }
 

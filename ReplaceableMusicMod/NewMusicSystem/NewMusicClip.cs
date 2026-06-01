@@ -1,13 +1,18 @@
+using System;
+
 namespace MusicReplacer.NewMusicSystem;
 
 public sealed class NewMusicClip
 {
-    public string ClipName { get; }
+    public string ClipId { get; }
+    [Obsolete]
+    public string ClipPath { get; }
     public audioSelectionData.eCLIP CustomClip { get; }
 
-    public NewMusicClip(string clipName, audioSelectionData.eCLIP customClip)
+    public NewMusicClip(string clipId, string clipPath, audioSelectionData.eCLIP customClip)
     {
-        ClipName = clipName;
+        ClipId = clipId;
+        ClipPath = clipPath;
         CustomClip = customClip;
     }
 }

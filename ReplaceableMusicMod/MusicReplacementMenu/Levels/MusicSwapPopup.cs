@@ -48,7 +48,7 @@ public class MusicSwapPopup : MonoBehaviour
         gameObject.SetActive(true);
 
         // Header
-        AddElement(LabelElement.Create($"Music Data for {music.LevelName} - {music.DisplayText}", 130));
+        AddElement(LabelElement.Create($"Music Data for {music.LevelName} - {music.DisplayText}", 110));
         AddElement(LabelElement.Create("Level: " + music.LevelName, 50, 60));
         
         // Info

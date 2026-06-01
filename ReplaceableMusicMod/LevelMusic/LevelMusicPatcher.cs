@@ -19,15 +19,17 @@ public static class LevelMusicPatcher
             return;
         }
         var overrideMusic = LevelOverrideManager.Data.GetLevelData(levelDef.level);
-        
-        if (overrideMusic.defaultMusic != 0)
+
+        var defaultMusic = overrideMusic.AccessDefaultMusic().GetEClip();
+        if (defaultMusic != 0)
         {
-            levelDef.defaultMusic.EnumValue = (audioSelectionData.eCLIP)overrideMusic.defaultMusic;
+            levelDef.defaultMusic.EnumValue = (audioSelectionData.eCLIP)defaultMusic;
         }
 
-        if (overrideMusic.arenaMusic != 0)
+        var arenaMusic = overrideMusic.AccessArenaMusic().GetEClip();
+        if (arenaMusic != 0)
         {
-            levelDef.arenaMusic.EnumValue = (audioSelectionData.eCLIP)overrideMusic.arenaMusic;
+            levelDef.arenaMusic.EnumValue = (audioSelectionData.eCLIP)arenaMusic;
         }
 
         PatchTriggers();
@@ -47,7 +49,7 @@ public static class LevelMusicPatcher
 
         foreach (var overrideTrigger in LevelOverrideManager.Data.GetLevels())
         {
-            foreach (var (hashString, clip) in overrideTrigger.Value.GetTriggerReplacements())
+            foreach (var (hashString, clip) in overrideTrigger.Value.BuildTriggerReplacementsDictionary())
             {
                 if (clip <= 0)
                 {
@@ -68,7 +70,9 @@ public static class LevelMusicPatcher
                     continue;
                 }
 
-                trigger.musicClip.EnumValue = (audioSelectionData.eCLIP)clip;
+                var eClip = (audioSelectionData.eCLIP)clip;
+                trigger.musicClip.EnumValue = eClip;
+                trigger.m_Clip = eClip;
             }
         }
     }

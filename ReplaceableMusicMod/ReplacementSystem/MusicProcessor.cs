@@ -114,7 +114,7 @@ public static class MusicProcessor
         return _musicByCategory[category];
     }
     
-    public static IEnumerable<(MusicCategory category, MusicSound sound)> GetAllMusic(bool ignoreUnused)
+    public static IEnumerable<(MusicCategory category, MusicSound sound)> GetAllMusicByCategory(bool ignoreUnused)
     {
         foreach (var category in _musicByCategory)
         {

@@ -167,12 +167,15 @@ public class LevelSelectorMenu : MonoBehaviour
     {
         var defaultData = LevelRipper.GetLevelMusicData(levelDef.level);
         var moddedData = LevelOverrideManager.Data.GetLevelData(levelDef.level);
+
+        var currentDefaultMusic = moddedData.AccessDefaultMusic().GetEClip();
+        var currentArenaMusic = moddedData.AccessArenaMusic().GetEClip();
         
-        if (moddedData.defaultMusic != 0 && moddedData.defaultMusic != defaultData.DefaultMusic)
+        if (currentDefaultMusic != 0 && currentDefaultMusic != defaultData.DefaultMusic)
             return true;
-        if (moddedData.arenaMusic != 0 && moddedData.arenaMusic != defaultData.ArenaMusic)
+        if (currentArenaMusic != 0 && currentArenaMusic != defaultData.ArenaMusic)
             return true;
-        if (moddedData.triggerReplacements is { Count: > 0 })
+        if (moddedData.HasAnyTriggerReplacements())
             return true;
         
         return false;

@@ -1,32 +1,55 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using CobraSoundReplacer.Core;
 using MusicReplacer.ReplacementSystem;
+using UnityEngine;
 
 namespace MusicReplacer.NewMusicSystem;
 
 public static class NewMusicLoader
 {
+    private const float DefaultVolume = 5.3f;
+
     private const string SoundPackName = "Custom Music Pack";
     
     private static readonly Dictionary<string, NewMusicClip> NewClips = [];
     
-    public static void LoadNewMusic()
+    internal static void LoadNewMusic()
     {
         var soundClipPaths = DetectAllSoundFiles();
+        if (!soundClipPaths.Any())
+        {
+            Plugin.Logger.LogMessage("Skipping sound pack - no new custom music found");
+            return;
+        }
         var soundPack = BuildSoundPack(soundClipPaths);
-        Plugin.StartCoroutineOnPlugin(RegisterSoundPackAsync(soundPack));
+        SoundPackRegistry.RegisterRuntimeSoundPack(soundPack, FileManagement.GetModFolder());
+        Plugin.StartCoroutineOnPlugin(CacheEClipsWhenReady(soundPack));
     }
 
     public static IEnumerable<NewMusicClip> GetNewMusicClips()
     {
         return NewClips.Values;
     }
-
-    private static IEnumerator RegisterSoundPackAsync(SoundPack pack)
+    
+    public static int GetEClipForCustomSound(string customSoundName)
     {
-        yield return SoundPackRegistry.RegisterSoundPack(pack, FileManagement.GetModFolder());
+        bool found = CobraSoundReplacer.API.CustomSoundUtils.TryGetEClip(customSoundName, out var clip);
+            
+        if (!found)
+        {
+            Plugin.Logger.LogWarning("Failed to find EClip for custom sound: " + customSoundName);
+            return (int)audioSelectionData.eCLIP.NONE;
+        }
+
+        return (int)clip;
+    }
+
+    private static IEnumerator CacheEClipsWhenReady(SoundPack pack)
+    {
+        yield return new WaitUntil(() => SoundPackRegistry.ReplacementCompleted);
         CacheCreatedEClips(pack.NewEClips.Select(e => e.Id).ToArray());
     }
 
@@ -42,41 +65,58 @@ public static class NewMusicLoader
                 continue;
             }
             
-            NewClips.Add(id, new NewMusicClip(id, clip));
+            NewClips.Add(id, new NewMusicClip(id, id, clip));
         }
     }
 
-    private static string[] DetectAllSoundFiles()
+    private static string GetIdForPath(string path)
+    {
+        return Path.GetFileNameWithoutExtension(path.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+            .Last());
+    }
+
+    private static IEnumerable<string> DetectAllSoundFiles()
     {
         var folder = FileManagement.GetNewMusicFolder();
-        return FileManagement.GetAllSoundFilesInFolder(folder, FileManagement.GetModFolder());
+        return FileManagement.GetAllSoundFilesInFolder(folder, FileManagement.GetModFolder()).Select(path => path.Replace('\\', '/'));
     }
 
     private static SoundPack BuildSoundPack(IEnumerable<string> clipPaths)
     {
         var pack = new SoundPack();
+        
         var newEClips = new List<CustomEClip>();
+        var newSounds = new List<NewSound>();
+        
         var idsHashset = new HashSet<string>();
-        foreach (var clip in clipPaths)
+        
+        foreach (var clipPath in clipPaths)
         {
-            if (!idsHashset.Add(clip))
+            var id = GetIdForPath(clipPath);
+            if (!idsHashset.Add(id))
             {
                 Plugin.Logger.LogWarning("Duplicate clips detected while building pack: " + SoundPackName);
                 continue;
             }
             newEClips.Add(new CustomEClip
             {
-                Id = clip,
-                SoundName = clip
+                Id = id,
+                SoundName = id
+            });
+            newSounds.Add(new NewSound(id, clipPath, DefaultVolume)
+            {
+                VolumeType = (sbyte)CAudio.eVolumeType.music,
+                Looping = true
             });
         }
 
         pack.Enable = true;
         pack.PackName = SoundPackName;
-        var newClips = newEClips.ToArray();
-        pack.NewEClips = newClips;
+        var newClipsArray = newEClips.ToArray();
+        pack.NewEClips = newClipsArray;
+        pack.NewSounds = newSounds.ToArray();
         
-        Plugin.Logger.LogMessage($"Registered new Sound Pack with {newClips.Length} new clips!");
+        Plugin.Logger.LogMessage($"Registered new Sound Pack with {newClipsArray.Length} new clips!");
 
         return pack;
     }

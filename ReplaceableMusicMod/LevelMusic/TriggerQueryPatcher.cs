@@ -22,15 +22,15 @@ public static class TriggerQueryPatcher
         {
             Object.Destroy(_currentText);
         }
-
+        
         var id = GetTriggerIdOrZero(__instance.transform);
         if (id == 0)
         {
-            DisplayText("No music trigger found");
+            DisplayWithCoordinates("No music trigger found");
         }
         else
         {
-            DisplayText("<color=#fab514>Closest trigger</color>: " + id);
+            DisplayWithCoordinates("<color=#fab514>Closest trigger</color>: " + id);
             Plugin.Logger.LogMessage("Closest trigger: " + id);
         }
     }
@@ -49,6 +49,17 @@ public static class TriggerQueryPatcher
         }
         // implement logic here
         return 0;
+    }
+
+    private static void DisplayWithCoordinates(string message)
+    {
+        var coordinates = CobraCharacter.Instance.transform.position;
+        DisplayText(string.Format(
+            "{0} <color=#fab514>Coordinates: </color> ({1}, {2}, {3})",
+            message,
+            Mathf.RoundToInt(coordinates.x).ToString(),
+            Mathf.RoundToInt(coordinates.y).ToString(),
+            Mathf.RoundToInt(coordinates.z).ToString()));
     }
 
     private static void DisplayText(string message)
