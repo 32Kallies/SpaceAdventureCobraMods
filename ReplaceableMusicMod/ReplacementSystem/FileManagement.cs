@@ -11,7 +11,6 @@ public static class FileManagement
     private const string SoundsFolderName = "Custom Music";
     private const string SoundPackName = "CustomMusicData.soundreplacements";
     private const string LevelOverridesName = "LevelOverrides.json";
-    private const string NewMusicFolderName = "New Music";
     private static string _cachedSoundsFolderPath;
     private static string _cachedNewMusicFolderPath;
 
@@ -28,21 +27,6 @@ public static class FileManagement
         }
 
         return _cachedSoundsFolderPath;
-    }
-    
-    public static string GetNewMusicFolder()
-    {
-        if (string.IsNullOrEmpty(_cachedNewMusicFolderPath))
-        {
-            _cachedNewMusicFolderPath = Path.Combine(GetModFolder(), NewMusicFolderName);
-        }
-
-        if (!Directory.Exists(_cachedNewMusicFolderPath))
-        {
-            Directory.CreateDirectory(_cachedNewMusicFolderPath);
-        }
-
-        return _cachedNewMusicFolderPath;
     }
 
     public static string GetSoundPackPath()

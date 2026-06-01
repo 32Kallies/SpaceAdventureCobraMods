@@ -77,7 +77,7 @@ public static class NewMusicLoader
 
     private static IEnumerable<string> DetectAllSoundFiles()
     {
-        var folder = FileManagement.GetNewMusicFolder();
+        var folder = FileManagement.GetCustomSoundsFolder();
         return FileManagement.GetAllSoundFilesInFolder(folder, FileManagement.GetModFolder()).Select(path => path.Replace('\\', '/'));
     }
 
