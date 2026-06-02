@@ -9,9 +9,11 @@ namespace MusicReplacer.ReplacementSystem;
 public static class FileManagement
 {
     private const string SoundsFolderName = "Custom Music";
+    private const string CustomTriggersFolderName = "Custom Triggers";
     private const string SoundPackName = "CustomMusicData.soundreplacements";
     private const string LevelOverridesName = "LevelOverrides.json";
     private static string _cachedSoundsFolderPath;
+    private static string _cachedTriggersFolderPath;
 
     public static string GetCustomSoundsFolder()
     {
@@ -26,6 +28,21 @@ public static class FileManagement
         }
 
         return _cachedSoundsFolderPath;
+    }
+    
+    public static string GetCustomTriggersFolder()
+    {
+        if (string.IsNullOrEmpty(_cachedTriggersFolderPath))
+        {
+            _cachedTriggersFolderPath = Path.Combine(GetModFolder(), CustomTriggersFolderName);
+        }
+
+        if (!Directory.Exists(_cachedTriggersFolderPath))
+        {
+            Directory.CreateDirectory(_cachedTriggersFolderPath);
+        }
+
+        return _cachedTriggersFolderPath;
     }
 
     public static string GetSoundPackPath()

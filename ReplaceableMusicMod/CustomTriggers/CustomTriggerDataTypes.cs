@@ -7,7 +7,7 @@ public enum TriggerShape
     VerticalLine
 }
 
-public abstract class LevelTrigger
+public abstract class CustomTrigger
 {
     public string Name { get; set; } = "";
     public string Music { get; set; } = "";
@@ -16,7 +16,7 @@ public abstract class LevelTrigger
     public TriggerShape Shape { get; protected set; }
 }
 
-public class CenterBoxTrigger : LevelTrigger
+public class CenterBoxTrigger : CustomTrigger
 {
     public (float X, float Y) Center { get; set; }
     public (float W, float H) Size { get; set; }
@@ -27,7 +27,7 @@ public class CenterBoxTrigger : LevelTrigger
     }
 }
 
-public class CornerBoxTrigger : LevelTrigger
+public class CornerBoxTrigger : CustomTrigger
 {
     public (float X, float Y) Corner1 { get; set; }
     public (float X, float Y) Corner2 { get; set; }
@@ -38,7 +38,7 @@ public class CornerBoxTrigger : LevelTrigger
     }
 }
 
-public class VerticalLineTrigger : LevelTrigger
+public class VerticalLineTrigger : CustomTrigger
 {
     public float Left { get; set; }
     public float Right { get; set; }

@@ -7,11 +7,11 @@ using UnityEngine;
 
 namespace MusicReplacer.CustomTriggers;
 
-public static class LevelTriggerParser
+public static class CustomTriggerParser
 {
-    public static List<LevelTrigger> ParseAllFiles(string inFolder)
+    public static List<CustomTrigger> ParseAllFiles(string inFolder)
     {
-        var result = new List<LevelTrigger>();
+        var result = new List<CustomTrigger>();
         var filesInFolder = Directory.GetFiles(inFolder, "*.txt", SearchOption.AllDirectories);
         foreach (var file in filesInFolder)
         {
@@ -25,12 +25,12 @@ public static class LevelTriggerParser
         return result;
     }
     
-    private static List<LevelTrigger> ParseFile(string input)
+    private static List<CustomTrigger> ParseFile(string input)
     {
         var cleaned = StripExamples(input);
         var blocks = SplitBlocks(cleaned);
 
-        var result = new List<LevelTrigger>();
+        var result = new List<CustomTrigger>();
 
         foreach (var block in blocks)
         {
@@ -75,7 +75,7 @@ public static class LevelTriggerParser
     }
 
     // PARSE AN INDIVIDUAL BLOCK
-    private static LevelTrigger? ParseBlock(string block)
+    private static CustomTrigger ParseBlock(string block)
     {
         var lines = block
             .Split('\n')
@@ -99,7 +99,11 @@ public static class LevelTriggerParser
         if (!dict.TryGetValue("Name", out var name))
             return null;
 
-        dict.TryGetValue("Music", out var music);
+        string music = string.Empty;
+        if (dict.TryGetValue("Music", out var musicFullName))
+        {
+            music = Path.GetFileNameWithoutExtension(musicFullName);
+        }
         dict.TryGetValue("Level", out var level);
 
         int priority = ParseInt("Priority");
@@ -205,7 +209,7 @@ public static class LevelTriggerParser
             : 0;
     }
     
-    private static void ValidateLevelTrigger(string textFilePath, LevelTrigger trigger)
+    private static void ValidateLevelTrigger(string textFilePath, CustomTrigger trigger)
     {
         var fileName = Path.GetFileName(textFilePath);
 
@@ -214,7 +218,7 @@ public static class LevelTriggerParser
             Warn("Invalid level string: " + trigger.Level);
         }
 
-        if (trigger.Music.IndexOfAny(Path.GetInvalidFileNameChars()) < 0)
+        if (trigger.Music.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
         {
             Warn("Invalid music filename: " + trigger.Music);
         }
