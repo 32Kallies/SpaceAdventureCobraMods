@@ -94,6 +94,7 @@ public class EClipChooserMenu : MonoBehaviour
     private void DrawWindow(SwappableMusic music)
     {
         AddElement(ButtonElement.Create("CANCEL", Hide, 80), 0);
+        AddElement(ButtonElement.Create("FOLDER", FileManagement.OpenCustomSoundsFolder, 80), 0);
         AddElement(ButtonElement.Create("RESET", () => SetClip(music, audioSelectionData.eCLIP.NONE), 80), 0);
         
         // Placeholders hack to align all elements
