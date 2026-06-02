@@ -112,9 +112,6 @@ public static class LevelMusicPatcher
 
     private static void CreateCustomTrigger(CustomTrigger trigger)
     {
-        const float triggerDepth = 100f;
-        const float verticalTriggerHeight = 100f;
-        
         var gameObject = new GameObject("Trigger-" + trigger.Name);
         gameObject.SetActive(false);
         gameObject.layer = 12;
@@ -132,42 +129,10 @@ public static class LevelMusicPatcher
             EnumValue = clip
         };
 
-        switch (trigger.Shape)
-        {
-            case TriggerShape.CenterBox:
-                var box = trigger as CenterBoxTrigger;
-                gameObject.transform.position = new Vector3(box.Center.X, box.Center.Y, 0);
-                collider.size = new Vector3(box.Size.W, box.Size.H, triggerDepth);
-                break;
-            case TriggerShape.VerticalLine:
-                var line = trigger as VerticalLineTrigger;
-                gameObject.transform.position = new Vector3((line.Left + line.Right) / 2, 0);
-                collider.size = new Vector3(Mathf.Abs(line.Right - line.Left), verticalTriggerHeight, triggerDepth);
-                break;
-            case TriggerShape.CornerBox:
-                var corners = trigger as CornerBoxTrigger;
-                gameObject.transform.position = GetCenterBetweenCorners(corners);
-                collider.size = GetTriggerSizeBetweenCorners(corners, triggerDepth);
-                break;
-            default: throw new ArgumentOutOfRangeException(nameof(trigger.Shape));
-        }
+        var bounds = CustomTriggerUtils.GetCustomTriggerBounds(trigger);
+        gameObject.transform.position = bounds.Center;
+        collider.size = bounds.Size;
         
         gameObject.SetActive(true);
-    }
-
-    private static Vector3 GetCenterBetweenCorners(CornerBoxTrigger data)
-    {
-        return new Vector3(
-            (data.Corner1.X + data.Corner2.X) / 2,
-            (data.Corner1.Y + data.Corner2.Y) / 2,
-            0);
-    }
-    
-    private static Vector3 GetTriggerSizeBetweenCorners(CornerBoxTrigger data, float depth)
-    {
-        return new Vector3(
-            Mathf.Abs(data.Corner1.X - data.Corner2.X),
-            Mathf.Abs(data.Corner1.Y - data.Corner2.Y),
-            depth);
     }
 }
