@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using MusicReplacer.CustomTriggers;
+using MusicReplacer.Data;
 using MusicReplacer.LevelMusic;
 using MusicReplacer.MusicReplacementMenu.EditMusicPopup;
 using MusicReplacer.MusicReplacementMenu.EditMusicPopup.Elements;
@@ -13,6 +18,7 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
 
     private int _selectionIndex;
     private EditableTrigger[] _triggers;
+    private EditableTrigger[] _newTriggers;
     private MusicSwapPopup _musicSwap;
     private LevelEditorMenu _levelEditor;
 
@@ -23,6 +29,8 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
     
     private Color _customNormalIconColor = new(0.75f, 0.45f, 0.1f, 0.8f);
     private Color _customSelectedIconColor = new(0.8f, 0.6f, 0.2f);
+    
+    private Color _newTriggerColor = new(0.4f, 0f, 0.8f, 0.5f);
     
     private float _defaultIconWidth = 10f;
     private const float MapHeight = 600;
@@ -49,8 +57,8 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
 
         foreach (var levelTrigger in levelTriggers.Values)
         {
-            var music = SwappableMusic.CreateSwappableTriggerMusic(levelDefinition, levelTrigger);
-            var isCustom = music.DefaultClip != music.GetCurrentClip();
+            SwappableMusic music = SwappableMusic.CreateSwappableTriggerMusic(levelDefinition, levelTrigger);
+            bool isCustom = music.DefaultClip != music.GetCurrentClip();
             var trigger = new EditableTrigger
             {
                 RawData = levelTrigger,
@@ -60,12 +68,27 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
             editableTriggers[i] = trigger;
             i++;
         }
+
+        EditableTrigger[] newTriggers = CustomTriggerParser.ParseAllFiles(FileManagement.GetCustomTriggersFolder())
+            .Where(trigger => string.Equals(trigger.Level, levelDefinition.levelName, StringComparison.OrdinalIgnoreCase))
+            .Select(trigger => new EditableTrigger
+            {
+                RawData = new LevelTrigger
+                {
+                    Size = new SimpleVector3(CustomTriggerUtils.GetCustomTriggerBounds(trigger).Size),
+                    Center = new SimpleVector3(CustomTriggerUtils.GetCustomTriggerBounds(trigger).Center),
+                    Type = PrimitiveType.Cube
+                },
+                IsNewTrigger = true,
+                Custom = true
+            }).ToArray();
         
-        System.Array.Sort(editableTriggers, (a, b) =>
+        Array.Sort(editableTriggers, (a, b) =>
             a.RawData.Center.X.CompareTo(b.RawData.Center.X));
 
         var map = element.gameObject.AddComponent<TriggerMap>();
         map._triggers = editableTriggers;
+        map._newTriggers = newTriggers;
         map.CalculateBounds();
         map.BuildMap();
         return map;
@@ -76,6 +99,10 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
         foreach (var trigger in _triggers)
         {
             trigger.Image = BuildTriggerIcon(trigger);
+        }
+        foreach (var newTrigger in _newTriggers)
+        {
+            newTrigger.Image = BuildTriggerIcon(newTrigger);
         }
     }
 
@@ -188,6 +215,7 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
         public SwappableMusic Music { get; set; }
         public Image Image { get; set; }
         public bool Custom { get; set; }
+        public bool IsNewTrigger { get; set; }
     }
 
     // Creates an icon for each trigger and sets its position into the bounds of the mesh
@@ -200,7 +228,11 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
         iconObject.transform.SetParent(mapRoot, false);
 
         var image = iconObject.AddComponent<Image>();
-        image.color = trigger.Custom ? _customNormalIconColor : _normalIconColor;
+        
+        if (trigger.IsNewTrigger)
+            image.color = _newTriggerColor;
+        else
+            image.color = trigger.Custom ? _customNormalIconColor : _normalIconColor;
 
         var rect = image.rectTransform;
         rect.anchorMin = new Vector2(0f, 0f);
