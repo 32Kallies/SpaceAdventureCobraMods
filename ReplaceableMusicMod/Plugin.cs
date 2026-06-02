@@ -12,7 +12,7 @@ using UnityEngine;
 namespace MusicReplacer;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
-[BepInDependency("com.lee23.cobrasoundreplacer", "1.3.1")]
+[BepInDependency("com.lee23.cobrasoundreplacer", "1.3.2")]
 public class Plugin : BaseUnityPlugin
 {
     internal static new ManualLogSource Logger;
