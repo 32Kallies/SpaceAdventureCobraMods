@@ -117,7 +117,9 @@ public static class LevelMusicPatcher
         
         var gameObject = new GameObject("Trigger-" + trigger.Name);
         gameObject.SetActive(false);
+        gameObject.layer = 12;
         var collider = gameObject.AddComponent<BoxCollider>();
+        collider.isTrigger = true;
         var behavior = gameObject.AddComponent<audioForceMusicTrigger>();
         behavior.musicPriority = trigger.Priority;
         if (!CustomSoundUtils.TryGetEClip(trigger.Music, out var clip))

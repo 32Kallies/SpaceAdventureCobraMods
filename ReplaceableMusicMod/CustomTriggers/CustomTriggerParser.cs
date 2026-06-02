@@ -106,7 +106,7 @@ public static class CustomTriggerParser
         }
         dict.TryGetValue("Level", out var level);
 
-        int priority = ParseInt("Priority");
+        int priority = ParseInt(dict.GetValueOrDefault("Priority"));
 
         // DETECT TYPE
 
