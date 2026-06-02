@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CobraSoundReplacer.API;
 
 namespace MusicReplacer.ReplacementSystem;
 
@@ -148,6 +149,12 @@ public static class MusicProcessor
         {
             return name;
         }
+
+        if (CustomSoundUtils.TryGetCustomSoundNameForEClip(clip, out var soundName))
+        {
+            return soundName;
+        }
+        
         Plugin.Logger.LogWarning("Failed to find LoadName for EClip: " + clip);
         return clip.ToString();
     }
@@ -163,6 +170,11 @@ public static class MusicProcessor
                 finalName += $" (<color=#7F00FF>{customSoundName}</color>)";
             }
             return finalName;
+        }
+        
+        if (CustomSoundUtils.TryGetCustomSoundNameForEClip(clip, out var soundName))
+        {
+            return $"{soundName} (<color=#7F00FF>custom</color>)";
         }
         
         Plugin.Logger.LogWarning("Failed to find LoadName for EClip: " + clip);
