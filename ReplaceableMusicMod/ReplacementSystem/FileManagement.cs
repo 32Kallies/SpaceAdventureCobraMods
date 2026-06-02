@@ -12,7 +12,6 @@ public static class FileManagement
     private const string SoundPackName = "CustomMusicData.soundreplacements";
     private const string LevelOverridesName = "LevelOverrides.json";
     private static string _cachedSoundsFolderPath;
-    private static string _cachedNewMusicFolderPath;
 
     public static string GetCustomSoundsFolder()
     {
