@@ -33,6 +33,8 @@ public static class AudioLoadingUtils
             yield break;
         }
 
+        clip.name = Path.GetFileNameWithoutExtension(filePath);
+
         result.SetResult(clip);
     }
     

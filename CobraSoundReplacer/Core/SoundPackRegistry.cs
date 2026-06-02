@@ -126,7 +126,8 @@ public static class SoundPackRegistry
                 clip = NewSoundClips[newSound.Value],
                 loadname = newSound.Key,
                 type = (CAudio.eVolumeType)data.VolumeType,
-                loop = data.Looping
+                loop = data.Looping,
+                hashName = newSound.Key.GetHashCode()
             };
             i++;
         }
