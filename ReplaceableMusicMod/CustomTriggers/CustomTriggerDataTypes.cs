@@ -42,6 +42,8 @@ public class VerticalLineTrigger : CustomTrigger
 {
     public float Left { get; set; }
     public float Right { get; set; }
+    public float CenterY { get; set; }
+    public float Height { get; set; }
 
     public VerticalLineTrigger()
     {

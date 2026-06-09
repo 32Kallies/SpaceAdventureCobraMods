@@ -5,7 +5,6 @@ namespace MusicReplacer.CustomTriggers;
 public static class CustomTriggerUtils
 {
     private const float TriggerDepth = 100f;
-    private const float VerticalTriggerHeight = 100f;
 
     public static CustomTriggerBounds GetCustomTriggerBounds(CustomTrigger data)
     {
@@ -35,8 +34,8 @@ public static class CustomTriggerUtils
     private static CustomTriggerBounds GetVerticalLineTriggerBounds(VerticalLineTrigger data)
     {
         return new CustomTriggerBounds(
-            new Vector3((data.Left + data.Right) / 2, 0),
-            new Vector3(Mathf.Abs(data.Right - data.Left), VerticalTriggerHeight, TriggerDepth)
+            new Vector3((data.Left + data.Right) / 2, data.CenterY),
+            new Vector3(Mathf.Abs(data.Right - data.Left), data.Height, TriggerDepth)
         );
     }
     

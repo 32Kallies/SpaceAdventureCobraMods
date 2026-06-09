@@ -145,6 +145,12 @@ public static class CustomTriggerParser
         // Vertical line (left to right)
         if (dict.ContainsKey("Left Coordinate") && dict.ContainsKey("Right Coordinate"))
         {
+            float centerY = 0;
+            if (dict.TryGetValue("Center Y", out var centerYText))
+                centerY = ParseFloat(centerYText);
+            float height = 150;
+            if (dict.TryGetValue("Height", out var heightText))
+                height = ParseFloat(heightText);
             var t = new VerticalLineTrigger
             {
                 Name = name,
@@ -152,7 +158,9 @@ public static class CustomTriggerParser
                 Level = level ?? string.Empty,
                 Priority = priority,
                 Left = ParseFloat(dict["Left Coordinate"]),
-                Right = ParseFloat(dict["Right Coordinate"])
+                Right = ParseFloat(dict["Right Coordinate"]),
+                CenterY = centerY,
+                Height = height
             };
 
             return t;
