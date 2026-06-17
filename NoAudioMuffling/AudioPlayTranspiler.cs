@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection.Emit;
 using HarmonyLib;
+using UnityEngine;
 
 namespace NoAudioMuffling;
 
@@ -13,6 +14,11 @@ public static class AudioPlayTranspiler
         var codeMatcher = new CodeMatcher(instructions);
 
         codeMatcher.Start()
+            .MatchForward(false,
+                new CodeMatch(instruction => instruction.opcode == OpCodes.Ldc_R4 &&
+                                             instruction.operand is float f && Mathf.Approximately(f, 0.1f)))
+            .ThrowIfInvalid("Failed to find first instance of 0.1f")
+            .SetOperandAndAdvance(float.MaxValue)
             .MatchForward(false,
                 new CodeMatch(instruction => instruction.opcode == OpCodes.Ldfld &&
                                              instruction.LoadsField(AccessTools.Field(typeof(CAudio),
