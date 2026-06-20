@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Product>PsychogunImproved</Product>
-    <Version>1.0.0</Version>
+    <Version>1.0.5</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <RestoreAdditionalProjectSources>
@@ -13,7 +13,7 @@
     </RestoreAdditionalProjectSources>
     <RootNamespace>PsychogunImproved</RootNamespace>
     <BepInExPluginName>Psychogun Improved</BepInExPluginName>
-    <BepInExPluginGuid>com.lee23.psychogunimproved</BepInExPluginGuid>
+    <BepInExPluginGuid>com.kallie23.psychogunimproved</BepInExPluginGuid>
     <PackageId>PsychogunImproved</PackageId>
   </PropertyGroup>
 
