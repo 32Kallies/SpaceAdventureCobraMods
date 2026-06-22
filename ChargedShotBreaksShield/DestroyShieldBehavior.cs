@@ -4,7 +4,7 @@ namespace ChargedShotsBreakShields;
 
 public class DestroyShieldBehavior : MonoBehaviour
 {
-    private const float DestroyRevolverShieldRadius = 1.5f;
+    private float _destroyRevolverShieldRadius = 1.5f;
 
     private bool _fullyCharged;
 
@@ -13,6 +13,8 @@ public class DestroyShieldBehavior : MonoBehaviour
     private void Start()
     {
         _fullyCharged = FullyChargedShotTracker.GetDidPlayerShootFullyChargedShot();
+        _destroyRevolverShieldRadius = GetComponent<Projectile>().overlapSphereRadiusAtInit;
+        Debug.Log("Destroy revolver shield radius: " + _destroyRevolverShieldRadius);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -38,7 +40,7 @@ public class DestroyShieldBehavior : MonoBehaviour
         if (!_fullyCharged)
             return;
 
-        var hits = Physics.OverlapSphereNonAlloc(transform.position, DestroyRevolverShieldRadius, SharedBuffer, -1);
+        var hits = Physics.OverlapSphereNonAlloc(transform.position, _destroyRevolverShieldRadius, SharedBuffer, -1);
         for (int i = 0; i < hits; i++)
         {
             if (SharedBuffer[i] == null)
