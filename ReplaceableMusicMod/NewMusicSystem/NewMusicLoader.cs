@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using CobraSoundReplacer.Core;
 using MusicReplacer.ReplacementSystem;
+using MusicReplacer.Utilities;
 using UnityEngine;
 
 namespace MusicReplacer.NewMusicSystem;

@@ -2,6 +2,7 @@ using System.Collections;
 using CobraSoundReplacer.Utils;
 using HarmonyLib;
 using MusicReplacer.ReplacementSystem;
+using MusicReplacer.Utilities;
 using UnityEngine;
 
 namespace MusicReplacer;

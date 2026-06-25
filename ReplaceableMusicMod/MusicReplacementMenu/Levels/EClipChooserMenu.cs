@@ -3,6 +3,7 @@ using MusicReplacer.MusicReplacementMenu.EditMusicPopup;
 using MusicReplacer.MusicReplacementMenu.EditMusicPopup.Elements;
 using MusicReplacer.NewMusicSystem;
 using MusicReplacer.ReplacementSystem;
+using MusicReplacer.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
 

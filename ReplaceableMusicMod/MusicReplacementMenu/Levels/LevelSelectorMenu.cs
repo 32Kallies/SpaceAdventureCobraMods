@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using MusicReplacer.LevelMusic;
+using MusicReplacer.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -165,7 +166,7 @@ public class LevelSelectorMenu : MonoBehaviour
     
     private static bool GetLevelHasOverride(LevelDefinition levelDef)
     {
-        var defaultData = LevelRipper.GetLevelMusicData(levelDef.level);
+        var defaultData = LevelRipperUtils.GetLevelMusicData(levelDef.level);
         var moddedData = LevelOverrideManager.Data.GetLevelData(levelDef.level);
 
         var currentDefaultMusic = moddedData.AccessDefaultMusic().GetEClip();

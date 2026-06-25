@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using MusicReplacer.MusicReplacementMenu.EditMusicPopup.Elements;
 using MusicReplacer.ReplacementSystem;
+using MusicReplacer.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
 

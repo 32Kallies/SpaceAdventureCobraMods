@@ -7,6 +7,7 @@ using HarmonyLib;
 using MusicReplacer.LevelMusic;
 using MusicReplacer.NewMusicSystem;
 using MusicReplacer.ReplacementSystem;
+using MusicReplacer.Utilities;
 using UnityEngine;
 
 namespace MusicReplacer;
@@ -33,7 +34,7 @@ public class Plugin : BaseUnityPlugin
         Logger = base.Logger;
         
         // Register main logic
-        LevelRipper.LoadLevelData();
+        LevelRipperUtils.LoadLevelData();
         MusicReplacementManager.Register();
         LevelOverrideManager.Initialize();
         NewMusicLoader.LoadNewMusic();

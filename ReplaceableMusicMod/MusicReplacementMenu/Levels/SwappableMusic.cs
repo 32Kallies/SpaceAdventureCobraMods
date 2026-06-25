@@ -1,5 +1,6 @@
 using MusicReplacer.LevelMusic;
 using MusicReplacer.LevelMusic.Data;
+using MusicReplacer.Utilities;
 
 namespace MusicReplacer.MusicReplacementMenu.Levels;
 
@@ -45,7 +46,7 @@ public class SwappableMusic
     {
         var music = GetSwappableMusicBase(definition);
         music.DisplayText = "Ambient Music";
-        music.DefaultClip = (audioSelectionData.eCLIP)LevelRipper.GetLevelMusicData(definition.level).DefaultMusic;
+        music.DefaultClip = (audioSelectionData.eCLIP)LevelRipperUtils.GetLevelMusicData(definition.level).DefaultMusic;
         music.OverrideClip = (audioSelectionData.eCLIP)LevelOverrideManager.Data.GetLevelData(definition.level).AccessDefaultMusic().GetEClip();
         music._pointer = MusicPointer.GetAmbient();
         return music;
@@ -55,7 +56,7 @@ public class SwappableMusic
     {
         var music = GetSwappableMusicBase(definition);
         music.DisplayText = "Battle Music";
-        music.DefaultClip = (audioSelectionData.eCLIP)LevelRipper.GetLevelMusicData(definition.level).ArenaMusic;
+        music.DefaultClip = (audioSelectionData.eCLIP)LevelRipperUtils.GetLevelMusicData(definition.level).ArenaMusic;
         music.OverrideClip =
             (audioSelectionData.eCLIP)LevelOverrideManager.Data.GetLevelData(definition.level).AccessArenaMusic().GetEClip();
         music._pointer = MusicPointer.GetBattle();

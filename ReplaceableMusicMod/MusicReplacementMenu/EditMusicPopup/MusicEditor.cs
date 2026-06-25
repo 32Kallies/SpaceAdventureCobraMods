@@ -4,6 +4,7 @@ using CobraSoundReplacer.Utils;
 using MusicReplacer.MusicReplacementMenu.EditMusicPopup.Elements;
 using MusicReplacer.MusicReplacementMenu.MusicEditing;
 using MusicReplacer.ReplacementSystem;
+using MusicReplacer.Utilities;
 using UnityEngine;
 
 namespace MusicReplacer.MusicReplacementMenu.EditMusicPopup;

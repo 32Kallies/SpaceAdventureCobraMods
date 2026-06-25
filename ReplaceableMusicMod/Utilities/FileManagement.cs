@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using MusicReplacer.ReplacementSystem;
 
-namespace MusicReplacer.ReplacementSystem;
+namespace MusicReplacer.Utilities;
 
 public static class FileManagement
 {

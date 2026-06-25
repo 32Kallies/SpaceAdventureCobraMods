@@ -4,6 +4,7 @@ using CobraSoundReplacer.API;
 using HarmonyLib;
 using MusicReplacer.CustomTriggers;
 using MusicReplacer.ReplacementSystem;
+using MusicReplacer.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -46,8 +47,8 @@ public static class LevelMusicPatcher
         var musicTriggers = Object.FindObjectsOfType<audioForceMusicTrigger>();
         foreach (var trigger in musicTriggers)
         {
-            var dimensions = LevelRipper.GetColliderDimensions(trigger.gameObject);
-            var hash = LevelRipper.GenerateTriggerHash(dimensions.center, dimensions.size);
+            var dimensions = TriggerUtils.GetColliderDimensions(trigger.gameObject);
+            var hash = TriggerUtils.GenerateTriggerHash(dimensions.center, dimensions.size);
             triggers.Add(hash, trigger);
             Plugin.Logger.LogMessage($"{hash}\t{trigger}");
         }

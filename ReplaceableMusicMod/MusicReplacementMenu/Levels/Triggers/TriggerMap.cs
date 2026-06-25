@@ -8,6 +8,7 @@ using MusicReplacer.LevelMusic.Data;
 using MusicReplacer.MusicReplacementMenu.EditMusicPopup;
 using MusicReplacer.MusicReplacementMenu.EditMusicPopup.Elements;
 using MusicReplacer.ReplacementSystem;
+using MusicReplacer.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -51,7 +52,7 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
     {
         var element = CreateBase(MapHeight);
         element.gameObject.AddComponent<Image>().color = new Color(0.1f, 0.1f, 0.1f);
-        var levelTriggers = LevelRipper.GetLevelMusicData(levelDefinition.level).LevelTriggers;
+        var levelTriggers = LevelRipperUtils.GetLevelMusicData(levelDefinition.level).LevelTriggers;
 
         var editableTriggers = new EditableTrigger[levelTriggers.Count];
         int i = 0;

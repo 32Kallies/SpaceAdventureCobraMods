@@ -1,5 +1,6 @@
 using HarmonyLib;
 using MusicReplacer.MusicReplacementMenu;
+using MusicReplacer.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -42,8 +43,8 @@ public static class TriggerQueryPatcher
         {
             if (collider.TryGetComponent<audioForceMusicTrigger>(out _))
             {
-                var dimensions = LevelRipper.GetColliderDimensions(collider.gameObject);
-                var hash = LevelRipper.GenerateTriggerHash(dimensions.center, dimensions.size);
+                var dimensions = TriggerUtils.GetColliderDimensions(collider.gameObject);
+                var hash = TriggerUtils.GenerateTriggerHash(dimensions.center, dimensions.size);
                 return hash;
             }
         }

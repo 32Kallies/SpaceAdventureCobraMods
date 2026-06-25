@@ -5,6 +5,7 @@ using MusicReplacer.LevelMusic;
 using MusicReplacer.MusicReplacementMenu.EditMusicPopup;
 using MusicReplacer.MusicReplacementMenu.EditMusicPopup.Elements;
 using MusicReplacer.ReplacementSystem;
+using MusicReplacer.Utilities;
 using UnityEngine;
 
 namespace MusicReplacer.MusicReplacementMenu.Levels;

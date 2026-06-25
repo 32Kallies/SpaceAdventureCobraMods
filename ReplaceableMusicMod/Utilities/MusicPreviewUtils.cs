@@ -1,8 +1,9 @@
 using System.Collections;
 using CobraSoundReplacer.Utils;
+using MusicReplacer.ReplacementSystem;
 using UnityEngine;
 
-namespace MusicReplacer.ReplacementSystem;
+namespace MusicReplacer.Utilities;
 
 public static class MusicPreviewUtils
 {
