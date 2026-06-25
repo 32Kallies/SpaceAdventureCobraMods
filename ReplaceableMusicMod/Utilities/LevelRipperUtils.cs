@@ -37,6 +37,7 @@ public static class LevelRipperUtils
         };
     }
 
+    [Obsolete("Technically no longer required since all level rip data was regenerated with proper hashes")]
     private static void RegenerateHashes(RippedLevelMusicData data)
     {
         foreach (var trigger in data.LevelTriggers)
@@ -60,7 +61,7 @@ public static class LevelRipperUtils
     {
         var data = GenerateLevelMusicData();
         var json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
-        File.WriteAllText(Path.Combine("Level Music Data", data.LevelName + ".json"), json);
+        File.WriteAllText(Path.Combine("Ripped Level Data", data.LevelName + ".json"), json);
     }
     
     public static RippedLevelMusicData GenerateLevelMusicData()
@@ -75,7 +76,8 @@ public static class LevelRipperUtils
         data.ArenaMusic = (int)definition.arenaMusic.EnumValue;
         
         var triggers = new Dictionary<int, LevelTrigger>();
-        var musicTriggers = Object.FindObjectsOfType<audioForceMusicTrigger>();
+        // 'includeInactive = true' currently throws exceptions on many levels! some levels are outdated due to this
+        var musicTriggers = Object.FindObjectsOfType<audioForceMusicTrigger>(true);
         foreach (var trigger in musicTriggers)
         {
             var triggerData = new LevelTrigger();
@@ -91,6 +93,45 @@ public static class LevelRipperUtils
         }
 
         data.LevelTriggers = triggers;
+        
+        var arenaTriggers = new Dictionary<int, LevelArenaTrigger>();
+        var positionalHashByHash = new Dictionary<int, int>();
+        var arenaInstances = Object.FindObjectsOfType<NmiArena>(true);
+        foreach (var arena in arenaInstances)
+        {
+            var triggerData = new LevelArenaTrigger();
+            var dimensions = TriggerUtils.GetColliderDimensions(arena.gameObject);
+            var positionalHash = TriggerUtils.GenerateTriggerHash(dimensions.center, dimensions.size);
+            var hash = arena.arenaID;
+            triggerData.Type = dimensions.type;
+            triggerData.Center = new SimpleVector3(dimensions.center);
+            triggerData.Size = new SimpleVector3(dimensions.size);
+            triggerData.Radius = dimensions.size.x / 2;
+            triggerData.Hash = hash;
+            triggerData.MusicClip = (int)arena.arenaMusic.EnumValue;
+            triggerData.PlayArenaJingle = arena.playArenaJingle;
+            triggerData.PlayArenaVictory = arena.playArenaVictory;
+            triggerData.PlayArenaWallIn = arena.playArenaWallIn;
+            triggerData.PlayArenaWallOut = arena.playArenaWallOut;
+            triggerData.DestroyAtEnd = arena.isDestroyAtEnd;
+            
+            // Catch this common "mistake" from the devs (could be a mistake from my past self, who knows)
+            if (arenaTriggers.ContainsKey(hash)
+                && positionalHashByHash.TryGetValue(hash, out var otherPositionalHash)
+                && positionalHash == otherPositionalHash)
+            {
+                Plugin.Logger.LogWarning(
+                    $"Two arenas with same ID ({hash}) found. Since their positions are identical, this is fine.");
+                continue;
+            }
+
+            positionalHashByHash[hash] = positionalHash;
+            arenaTriggers.Add(triggerData.Hash, triggerData);
+        }
+        
+
+        data.ArenaTriggers = arenaTriggers;
+        
         return data;
     }
 }
