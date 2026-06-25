@@ -1,4 +1,5 @@
 using MusicReplacer.LevelMusic;
+using MusicReplacer.LevelMusic.Data;
 
 namespace MusicReplacer.MusicReplacementMenu.Levels;
 

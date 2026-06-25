@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using CobraSoundReplacer.API;
 using HarmonyLib;
 using MusicReplacer.CustomTriggers;
-using MusicReplacer.Data;
 using MusicReplacer.ReplacementSystem;
 using UnityEngine;
 using Object = UnityEngine.Object;

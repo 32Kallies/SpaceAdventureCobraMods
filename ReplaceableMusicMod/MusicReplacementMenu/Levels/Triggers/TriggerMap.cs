@@ -4,6 +4,7 @@ using System.Linq;
 using MusicReplacer.CustomTriggers;
 using MusicReplacer.Data;
 using MusicReplacer.LevelMusic;
+using MusicReplacer.LevelMusic.Data;
 using MusicReplacer.MusicReplacementMenu.EditMusicPopup;
 using MusicReplacer.MusicReplacementMenu.EditMusicPopup.Elements;
 using MusicReplacer.ReplacementSystem;

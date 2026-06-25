@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using MusicReplacer.Data;
 using MusicReplacer.LevelMusic;
+using MusicReplacer.LevelMusic.Data;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -10,19 +11,19 @@ namespace MusicReplacer;
 
 public static class LevelRipper
 {
-    private static GameLevelData _data;
+    private static RippedGameLevelData _data;
     
     public static void LoadLevelData()
     {
         var modFolder = Path.GetDirectoryName(Plugin.Assembly.Location);
         var levelMusicDataFolder = Path.Combine(modFolder, "Ripped Level Data");
         var files = Directory.GetFiles(levelMusicDataFolder, "*.json");
-        var dictionary = new Dictionary<int, LevelMusicData>();
+        var dictionary = new Dictionary<int, RippedLevelMusicData>();
         foreach (var file in files)
         {
             try
             {
-                var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<LevelMusicData>(File.ReadAllText(file));
+                var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<RippedLevelMusicData>(File.ReadAllText(file));
                 RegenerateHashes(obj);
                 dictionary.Add(obj.LevelId, obj);
             }
@@ -32,13 +33,13 @@ public static class LevelRipper
             }
         }
 
-        _data = new GameLevelData
+        _data = new RippedGameLevelData
         {
             Levels = dictionary
         };
     }
 
-    private static void RegenerateHashes(LevelMusicData data)
+    private static void RegenerateHashes(RippedLevelMusicData data)
     {
         foreach (var trigger in data.LevelTriggers)
         {
@@ -46,13 +47,13 @@ public static class LevelRipper
         }
     }
 
-    public static LevelMusicData GetLevelMusicData(LevelController.Level level)
+    public static RippedLevelMusicData GetLevelMusicData(LevelController.Level level)
     {
         var asInt = (int)level;
         return GetLevelMusicData(asInt);
     }
     
-    public static LevelMusicData GetLevelMusicData(int levelId)
+    public static RippedLevelMusicData GetLevelMusicData(int levelId)
     {
         return _data.Levels[levelId];
     }
@@ -64,9 +65,9 @@ public static class LevelRipper
         File.WriteAllText(Path.Combine("Level Music Data", data.LevelName + ".json"), json);
     }
     
-    public static LevelMusicData GenerateLevelMusicData()
+    public static RippedLevelMusicData GenerateLevelMusicData()
     {
-        var data = new LevelMusicData();
+        var data = new RippedLevelMusicData();
         
         var definition = GameController.Instance.GetCurrentLevelDefinition();
 

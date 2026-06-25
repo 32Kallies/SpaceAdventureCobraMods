@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace MusicReplacer.LevelMusic;
+namespace MusicReplacer.LevelMusic.Data;
 
 [Serializable]
 public class GlobalLevelOverrideData

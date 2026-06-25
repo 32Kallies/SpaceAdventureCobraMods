@@ -2,7 +2,7 @@ using System;
 using MusicReplacer.Data;
 using UnityEngine;
 
-namespace MusicReplacer.LevelMusic;
+namespace MusicReplacer.LevelMusic.Data;
 
 [Serializable]
 public class LevelTrigger

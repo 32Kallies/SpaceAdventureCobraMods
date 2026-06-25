@@ -4,7 +4,7 @@ using CobraSoundReplacer.API;
 using MusicReplacer.NewMusicSystem;
 using Newtonsoft.Json;
 
-namespace MusicReplacer.LevelMusic;
+namespace MusicReplacer.LevelMusic.Data;
 
 [Serializable]
 public class LevelOverrideData
