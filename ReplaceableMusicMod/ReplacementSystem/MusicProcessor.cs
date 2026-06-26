@@ -162,6 +162,9 @@ public static class MusicProcessor
     
     public static string GetFriendlyNameForEClip(audioSelectionData.eCLIP clip)
     {
+        if (clip == audioSelectionData.eCLIP.NONE)
+            return "<color=#AAAAAA>NONE</color>";
+        
         if (_musicSoundsByEClip.TryGetValue(clip, out var music))
         {
             var finalName = music.DisplayName;
