@@ -13,7 +13,7 @@ public class LevelSelectorMenu : MonoBehaviour
     public RectTransform episodesParent;
     public RectTransform levelsParent;
 
-    private readonly Color _deselected = new(0.5f, 0.5f, 0.5f, 0.5f);
+    private readonly Color _deselected = new(0.6f, 0.6f, 0.6f, 0.9f);
     private readonly Color _selected = new(1, 1, 1);
 
     private readonly Color _levelDeselected = new(0.5f, 0.5f, 0.5f, 0.7f);
