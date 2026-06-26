@@ -29,11 +29,15 @@ public class SwappableMusic
         {
             overrideClip = (audioSelectionData.eCLIP)clip;
         }
+
+        string displayNamePrefix = triggerData is LevelArenaTrigger ? "Arena" : "Trigger";
+        displayNamePrefix += $" {triggerData.Hash} Music";
+        
         var music = new SwappableMusic
         {
             _level = definition.level,
             LevelName = GameController.Instance.GetMissionNameText(definition.level),
-            DisplayText = $"Trigger {triggerData.Hash} Music",
+            DisplayText = displayNamePrefix,
             DefaultClip = (audioSelectionData.eCLIP)triggerData.MusicClip,
             OverrideClip = overrideClip,
             _pointer = MusicPointer.GetTrigger(triggerData.Hash.ToString())
