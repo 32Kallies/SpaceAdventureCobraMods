@@ -14,7 +14,7 @@ public class HomeMenu : MonoBehaviour
     private List<ButtonElement> _buttons;
     
     private static readonly List<(string label, MusicMenuEnabler.Tab tab)> Buttons = [
-        ("Replace Music Sounds", MusicMenuEnabler.Tab.MusicReplacer),
+        ("Replace Music Files", MusicMenuEnabler.Tab.MusicReplacer),
         ("Swap Level Music", MusicMenuEnabler.Tab.LevelMusic),
         ("Return to Main Menu", MusicMenuEnabler.Tab.MainMenu)
     ];
