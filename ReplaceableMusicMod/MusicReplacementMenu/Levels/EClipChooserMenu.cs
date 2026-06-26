@@ -30,8 +30,28 @@ public class EClipChooserMenu : MonoBehaviour
     
     private SwappableMusic _currentMusic;
     
+    // Controller movement
     private void Update()
     {
+        // Special case: Loop back from top to bottom
+        if (_row == 0 && _selectables.Count > 1 && Utils.GetButtonPushed(PadsController.LS_UP))
+        {
+            _row = _selectables.Count - 1;
+            PlayMoveSound();
+            OnChoiceChange();
+            return;
+        }
+        
+        // Special case: Loop back from bottom to top
+        if (_selectables.Count > 1 && _row == _selectables.Count - 1 && Utils.GetButtonPushed(PadsController.LS_DOWN))
+        {
+            _row = 0;
+            PlayMoveSound();
+            OnChoiceChange();
+            return;
+        }
+        
+        // Normal vertical movement
         UIController.HandleCursor(ref _row, _selectables.Count, 1, 2, _allowbuttonscycle: false, UIFooter.PREDEFINEDTYPE.GENERIC_VALIDATE, delegate
             {
                 Plugin.Logger.LogMessage("Clicked " + _row);
@@ -39,6 +59,7 @@ public class EClipChooserMenu : MonoBehaviour
             },
             Hide, OnChoiceChange, OnChoiceChange);
         
+        // Horizontal column movement
         if (Utils.GetButtonPushed(PadsController.LS_LEFT))
             MoveColumn(false);
         else if (Utils.GetButtonPushed(PadsController.LS_RIGHT))
@@ -48,8 +69,13 @@ public class EClipChooserMenu : MonoBehaviour
     private void MoveColumn(bool right)
     {
         _column = Mathf.Clamp(_column + (right ? 1 : -1), 0, _selectables[_row].Count - 1);
-        AudioController.Instance.PlaySound(audioSelectionData.eCLIP.UI_SELECTCHANGE, 0.4f);
+        PlayMoveSound();
         OnChoiceChange();
+    }
+
+    private void PlayMoveSound()
+    {
+        AudioController.Instance.PlaySound(audioSelectionData.eCLIP.UI_SELECTCHANGE, 0.4f);
     }
     
     private void ClearWindow()
@@ -88,6 +114,7 @@ public class EClipChooserMenu : MonoBehaviour
         {
             _selectables[_row][_column].Select();
         }
+        OnChoiceChange();
 
         _currentMusic = music;
     }
