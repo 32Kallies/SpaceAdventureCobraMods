@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using CobraSoundReplacer.API;
 using HarmonyLib;
@@ -40,6 +41,13 @@ public static class LevelMusicPatcher
         AddCustomTriggers(levelDef);
     }
 
+    [HarmonyPatch(typeof(CobraCharacter), nameof(CobraCharacter.Start))]
+    [HarmonyPostfix]
+    public static void PatchArenaMusicPostfix()
+    {
+        Plugin.StartCoroutineOnPlugin(PatchArenasWithDelay());
+    }
+
     private static void PatchTriggers()
     {
         var triggers = new Dictionary<int, audioForceMusicTrigger>();
@@ -49,12 +57,12 @@ public static class LevelMusicPatcher
             var dimensions = TriggerUtils.GetColliderDimensions(trigger.gameObject);
             var hash = TriggerUtils.GenerateTriggerHash(dimensions.center, dimensions.size);
             triggers.Add(hash, trigger);
-            Plugin.Logger.LogMessage($"{hash}\t{trigger}");
+            Plugin.Logger.LogDebug($"{hash}\t{trigger}");
         }
 
-        foreach (var overrideTrigger in LevelOverrideManager.Data.GetLevels())
+        foreach (var levelData in LevelOverrideManager.Data.GetLevels())
         {
-            foreach (var (hashString, clip) in overrideTrigger.Value.BuildTriggerReplacementsDictionary())
+            foreach (var (hashString, clip) in levelData.Value.BuildTriggerReplacementsDictionary())
             {
                 if (clip <= 0)
                 {
@@ -67,11 +75,12 @@ public static class LevelMusicPatcher
                     continue;
                 }
                 
-                Plugin.Logger.LogMessage($"Patching level music trigger '{hash}'.");
+                Plugin.Logger.LogInfo($"Patching level music trigger '{hash}'.");
 
                 if (!triggers.TryGetValue(hash, out var trigger))
                 {
-                    Plugin.Logger.LogError($"Failed to find trigger by hash '{hash}'.");
+                    if (!IsTriggerProbablyArena(hash))
+                        Plugin.Logger.LogError($"Failed to find trigger by hash '{hash}'.");
                     continue;
                 }
 
@@ -80,6 +89,64 @@ public static class LevelMusicPatcher
                 trigger.m_Clip = eClip;
             }
         }
+    }
+
+    // Necessary to prevent patching before the level is fully setup
+    private static IEnumerator PatchArenasWithDelay()
+    {
+        yield return new WaitForSeconds(1);
+        PatchArenas();
+    }
+    
+    private static void PatchArenas()
+    {
+        var arenas = new Dictionary<int, NmiArena>();
+        var arenasInScene = Object.FindObjectsOfType<NmiArena>(true);
+        foreach (var arena in arenasInScene)
+        {
+            var hash = arena.arenaID;
+            if (arenas.ContainsKey(hash))
+            {
+                Plugin.Logger.LogWarning("Multiple arenas found in scene with identical IDs! Skipping to avoid exceptions.");
+                continue;
+            }
+            arenas.Add(arena.arenaID, arena);
+            Plugin.Logger.LogDebug($"{hash}\t{arena}");
+        }
+
+        foreach (var levelData in LevelOverrideManager.Data.GetLevels())
+        {
+            foreach (var (hashString, clip) in levelData.Value.BuildTriggerReplacementsDictionary())
+            {
+                if (clip <= 0)
+                {
+                    continue;
+                }
+                
+                if (!int.TryParse(hashString, out var hash))
+                {
+                    Plugin.Logger.LogError($"Failed to parse hash for trigger '{hash}' in level {hashString}.");
+                    continue;
+                }
+                
+                Plugin.Logger.LogInfo($"Patching level arena trigger '{hash}'.");
+
+                if (!arenas.TryGetValue(hash, out var trigger))
+                {
+                    if (IsTriggerProbablyArena(hash))
+                        Plugin.Logger.LogError($"Failed to find arena by hash '{hash}'.");
+                    continue;
+                }
+
+                var eClip = (audioSelectionData.eCLIP)clip;
+                trigger.arenaMusic.EnumValue = eClip;
+            }
+        }
+    }
+
+    private static bool IsTriggerProbablyArena(int hash)
+    {
+        return hash <= 20 && hash >= 0;
     }
 
     private static void AddCustomTriggers(LevelDefinition level)
