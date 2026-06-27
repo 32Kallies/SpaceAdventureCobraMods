@@ -198,6 +198,8 @@ public static class LevelMusicPatcher
         var bounds = CustomTriggerUtils.GetCustomTriggerBounds(trigger);
         gameObject.transform.position = bounds.Center;
         collider.size = bounds.Size;
+
+        gameObject.AddComponent<CustomTriggerTag>();
         
         gameObject.SetActive(true);
     }

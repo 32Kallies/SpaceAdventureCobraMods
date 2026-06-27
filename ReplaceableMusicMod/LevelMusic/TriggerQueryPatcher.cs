@@ -1,4 +1,5 @@
 using HarmonyLib;
+using MusicReplacer.CustomTriggers;
 using MusicReplacer.MusicReplacementMenu;
 using MusicReplacer.Utilities;
 using UnityEngine;
@@ -19,21 +20,48 @@ public static class TriggerQueryPatcher
     {
         if (!Input.GetKeyDown(KeyCode.F5)) return;
         
+        Display(__instance.transform);
+    }
+
+    public static void Display(Transform cobraTransform)
+    {
         if (_currentText != null)
         {
             Object.Destroy(_currentText);
         }
         
-        var id = GetTriggerIdOrZero(__instance.transform);
-        if (id == 0)
+        var text = GetCoordinatesText();
+        
+        // Trigger
+        var triggerId = GetTriggerIdOrZero(cobraTransform);
+        if (triggerId != 0)
         {
-            DisplayWithCoordinates("No music trigger found");
+            text += "\n<color=#fab514>Closest trigger</color>: ";
+            text += triggerId;
+            Plugin.Logger.LogMessage("Closest trigger ID: " + triggerId);
+            TryTakeScreenshot(triggerId);
         }
-        else
+
+        // Arena
+        var arenaId = GetArenaIdOrZero();
+        if (arenaId != 0)
         {
-            DisplayWithCoordinates("<color=#fab514>Closest trigger</color>: " + id);
-            Plugin.Logger.LogMessage("Closest trigger: " + id);
+            text += "\n<color=#eb367b>Current arena ID</color>: ";
+            text += arenaId;
+            Plugin.Logger.LogMessage("Current arena ID: " + arenaId);
+            TryTakeScreenshot(arenaId);
         }
+        
+        DisplayText(text);
+    }
+
+    private static void TryTakeScreenshot(int triggerId)
+    {
+        if (CobraVideoPlayer.isPlayingVideo)
+            return;
+        if (Time.timeScale == 0)
+            return;
+        ScreenshotGenerator.GenerateScreenshotForTrigger(triggerId);
     }
 
     private static int GetTriggerIdOrZero(Transform playerTransform)
@@ -41,26 +69,38 @@ public static class TriggerQueryPatcher
         var colliders = Physics.OverlapSphere(playerTransform.position, 1f, -1, QueryTriggerInteraction.Collide);
         foreach (var collider in colliders)
         {
-            if (collider.TryGetComponent<audioForceMusicTrigger>(out _))
+            if (collider.TryGetComponent<audioForceMusicTrigger>(out _) && collider.GetComponent<CustomTriggerTag>() == null)
             {
                 var dimensions = TriggerUtils.GetColliderDimensions(collider.gameObject);
                 var hash = TriggerUtils.GenerateTriggerHash(dimensions.center, dimensions.size);
                 return hash;
             }
         }
-        // implement logic here
+        
         return 0;
     }
+    
+    private static int GetArenaIdOrZero()
+    {
+        if (!LevelController.Instance.IsInArena())
+            return 0;
+        
+        var arena = LevelController.Instance.GetCurrentArena();
+        
+        if (arena == null)
+            return 0;
+        
+        return arena.arenaID;
+    }
 
-    private static void DisplayWithCoordinates(string message)
+    private static string GetCoordinatesText()
     {
         var coordinates = CobraCharacter.Instance.transform.position;
-        DisplayText(string.Format(
-            "{0} <color=#fab514>Coordinates: </color> ({1}, {2}, {3})",
-            message,
+        return string.Format(
+            "<color=#fab514>Coordinates: </color> ({0}, {1}, {2})",
             Mathf.RoundToInt(coordinates.x).ToString(),
             Mathf.RoundToInt(coordinates.y).ToString(),
-            Mathf.RoundToInt(coordinates.z).ToString()));
+            Mathf.RoundToInt(coordinates.z).ToString());
     }
 
     private static void DisplayText(string message)
@@ -101,7 +141,7 @@ public static class TriggerQueryPatcher
 
         textRect.anchoredPosition = new Vector2(20f, -20f);
 
-        textRect.sizeDelta = new Vector2(1000f, 200f);
+        textRect.sizeDelta = new Vector2(1000f, 300f);
         
         Object.Destroy(canvasObj, Duration);
 

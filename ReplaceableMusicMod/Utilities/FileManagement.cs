@@ -11,10 +11,12 @@ public static class FileManagement
 {
     private const string SoundsFolderName = "Custom Music";
     private const string CustomTriggersFolderName = "Custom Triggers";
+    private const string ScreenshotsFolderName = "Trigger Screenshots";
     private const string SoundPackName = "CustomMusicData.soundreplacements";
     private const string LevelOverridesName = "LevelOverrides.json";
     private static string _cachedSoundsFolderPath;
     private static string _cachedTriggersFolderPath;
+    private static string _cachedScreenshotsFolderPath;
 
     public static string GetCustomSoundsFolder()
     {
@@ -44,6 +46,21 @@ public static class FileManagement
         }
 
         return _cachedTriggersFolderPath;
+    }
+    
+    public static string GetScreenshotsFolder()
+    {
+        if (string.IsNullOrEmpty(_cachedScreenshotsFolderPath))
+        {
+            _cachedScreenshotsFolderPath = Path.Combine(GetModFolder(), ScreenshotsFolderName);
+        }
+
+        if (!Directory.Exists(_cachedScreenshotsFolderPath))
+        {
+            Directory.CreateDirectory(_cachedScreenshotsFolderPath);
+        }
+
+        return _cachedScreenshotsFolderPath;
     }
 
     public static string GetSoundPackPath()
