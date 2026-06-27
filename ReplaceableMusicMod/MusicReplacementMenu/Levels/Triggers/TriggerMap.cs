@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using MusicReplacer.CustomTriggers;
 using MusicReplacer.Data;
-using MusicReplacer.LevelMusic;
 using MusicReplacer.LevelMusic.Data;
 using MusicReplacer.MusicReplacementMenu.EditMusicPopup;
 using MusicReplacer.MusicReplacementMenu.EditMusicPopup.Elements;
@@ -25,6 +23,8 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
     private MusicSwapPopup _musicSwap;
     private LevelEditorMenu _levelEditor;
     private ScreenshotPreview _preview;
+
+    private SimilarTriggersGroup _triggersGroup;
 
     private Text _selectionInfoText;
 
@@ -68,6 +68,8 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
         var editableTriggers = new EditableTrigger[mapTriggerCount];
         int i = 0;
 
+        var group = new SimilarTriggersGroup();
+
         foreach (var levelTrigger in levelTriggers.Values)
         {
             SwappableMusic music = SwappableMusic.CreateSwappableTriggerMusic(levelDefinition, levelTrigger);
@@ -79,6 +81,7 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
                 Custom = isCustom
             };
             editableTriggers[i] = trigger;
+            group.AddTrigger(trigger);
             i++;
         }
         
@@ -94,6 +97,7 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
                 IsArena = true
             };
             editableTriggers[i] = trigger;
+            group.AddTrigger(trigger);
             i++;
         }
 
@@ -118,6 +122,7 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
         map._levelDefinition = levelDefinition;
         map._triggers = editableTriggers;
         map._newTriggers = newTriggers;
+        map._triggersGroup = group;
         map.CalculateBounds();
         map.BuildMap();
         
@@ -208,7 +213,10 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
             }
             _triggers[i].Image.color = color;
         }
-        _preview.UpdateScreenshot(_levelDefinition.levelName, _triggers[_selectionIndex].RawData.Hash);
+        _preview.UpdateScreenshot(
+            _triggersGroup.GetFilePathToPreviewScreenshotForTriggerOrNull(
+                _levelDefinition.levelName,
+                _triggers[_selectionIndex]));
     }
 
     private string GetText()
@@ -300,16 +308,6 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
     public void Deselect()
     {
         _selected = false;
-    }
-
-    private class EditableTrigger
-    {
-        public LevelTrigger RawData { get; set; }
-        public SwappableMusic Music { get; set; }
-        public Image Image { get; set; }
-        public bool Custom { get; set; }
-        public bool IsNewTrigger { get; set; }
-        public bool IsArena { get; set; }
     }
 
     // Creates an icon for each trigger and sets its position into the bounds of the mesh

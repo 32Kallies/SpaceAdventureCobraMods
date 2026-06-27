@@ -11,14 +11,13 @@ public class ScreenshotPreview : MonoBehaviour
 
     private Texture2D _lastLoaded;
 
-    public void UpdateScreenshot(string levelName, int triggerHash)
+    public void UpdateScreenshot(string filePath)
     {
-        var path = ScreenshotGenerator.GetScreenshotFilePath(levelName, triggerHash);
-        var exists = File.Exists(path);
+        bool exists = !string.IsNullOrEmpty(filePath) && File.Exists(filePath);
         
         if (exists)
         {
-            _lastLoaded = LoadPNG(path);
+            _lastLoaded = LoadPNG(filePath);
             image.texture = _lastLoaded;
         }
         else
@@ -31,14 +30,13 @@ public class ScreenshotPreview : MonoBehaviour
     
     private static Texture2D LoadPNG(string filePath)
     {
-
         Texture2D tex = null;
         byte[] fileData;
 
         if (File.Exists(filePath)) 	{
             fileData = File.ReadAllBytes(filePath);
             tex = new Texture2D(2, 2);
-            tex.LoadImage(fileData); //..this will auto-resize the texture dimensions.
+            tex.LoadImage(fileData);
         }
         return tex;
     }
