@@ -26,13 +26,19 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
 
     private Text _selectionInfoText;
 
-    private Color _normalIconColor = new(0.4f, 0.1f, 0.1f, 0.7f);
-    private Color _selectedIconColor = new(0.6f, 0.2f, 0.2f);
+    private readonly Color _normalIconColor = new(0.4f, 0.1f, 0.1f, 0.7f);
+    private readonly Color _selectedIconColor = new(0.6f, 0.2f, 0.2f);
     
-    private Color _customNormalIconColor = new(0.75f, 0.45f, 0.1f, 0.8f);
-    private Color _customSelectedIconColor = new(0.8f, 0.6f, 0.2f);
+    private readonly Color _customNormalIconColor = new(0.75f, 0.45f, 0.1f, 0.8f);
+    private readonly Color _customSelectedIconColor = new(0.8f, 0.6f, 0.2f);
     
-    private Color _newTriggerColor = new(0.4f, 0f, 0.8f, 0.5f);
+    private readonly Color _arenaNormalIconColor = new(0.4f, 0.2f, 0.3f, 0.4f);
+    private readonly Color _arenaSelectedIconColor = new(0.6f, 0.3f, 0.5f);
+
+    private readonly Color _arenaCustomNormalIconColor = new(0.55f, 0.65f, 0.1f, 0.4f);
+    private readonly Color _arenaCustomSelectedIconColor = new(0.6f, 0.8f, 0.5f);
+
+    private readonly Color _newTriggerColor = new(0.4f, 0f, 0.8f, 0.5f);
     
     private float _defaultIconWidth = 10f;
     private const float MapHeight = 600;
@@ -52,9 +58,12 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
     {
         var element = CreateBase(MapHeight);
         element.gameObject.AddComponent<Image>().color = new Color(0.1f, 0.1f, 0.1f);
-        var levelTriggers = LevelRipperUtils.GetLevelMusicData(levelDefinition.level).LevelTriggers;
+        var data = LevelRipperUtils.GetLevelMusicData(levelDefinition.level);
+        var levelTriggers = data.LevelTriggers;
+        var arenaTriggers = data.ArenaTriggers;
 
-        var editableTriggers = new EditableTrigger[levelTriggers.Count];
+        var mapTriggerCount = levelTriggers.Count + arenaTriggers.Count;
+        var editableTriggers = new EditableTrigger[mapTriggerCount];
         int i = 0;
 
         foreach (var levelTrigger in levelTriggers.Values)
@@ -66,6 +75,21 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
                 RawData = levelTrigger,
                 Music = music,
                 Custom = isCustom
+            };
+            editableTriggers[i] = trigger;
+            i++;
+        }
+        
+        foreach (var arenaTrigger in arenaTriggers.Values)
+        {
+            SwappableMusic music = SwappableMusic.CreateSwappableTriggerMusic(levelDefinition, arenaTrigger);
+            bool isCustom = music.DefaultClip != music.GetCurrentClip();
+            var trigger = new EditableTrigger
+            {
+                RawData = arenaTrigger,
+                Music = music,
+                Custom = isCustom,
+                IsArena = true
             };
             editableTriggers[i] = trigger;
             i++;
@@ -114,9 +138,19 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
         for (int i = 0; i < _triggers.Length; i++)
         {
             var trigger = _triggers[i];
-            var color = _selectionIndex == i
-                ? trigger.Custom ? _customSelectedIconColor : _selectedIconColor // selected
-                : trigger.Custom ? _customNormalIconColor : _normalIconColor; // deselected
+            Color color;
+            if (trigger.IsArena)
+            {
+                color = _selectionIndex == i
+                    ? trigger.Custom ? _arenaCustomSelectedIconColor : _arenaSelectedIconColor // selected
+                    : trigger.Custom ? _arenaCustomNormalIconColor : _arenaNormalIconColor; // deselected
+            }
+            else
+            {
+                color = _selectionIndex == i
+                    ? trigger.Custom ? _customSelectedIconColor : _selectedIconColor // selected
+                    : trigger.Custom ? _customNormalIconColor : _normalIconColor; // deselected
+            }
             _triggers[i].Image.color = color;
         }
     }
@@ -133,7 +167,8 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
         var triggerIndexText = (_selectionIndex + 1).ToString("00");
         var triggerCountText = _triggers.Length.ToString("00");
         var hash = _triggers[_selectionIndex].RawData.Hash;
-        var label = $"TRIGGER {triggerIndexText}/{triggerCountText}";
+        string typeText = _triggers[_selectionIndex].IsArena ? "ARENA" : "TRIGGER";
+        string label = $"{triggerIndexText}/{triggerCountText} - {typeText}";
         if (music.GetCurrentClip() != music.DefaultClip)
             label = $"<color=#FFA000>{label}</color>";
         return $"[{label}] Music: {musicName}\t\tID: {hash}";
@@ -218,6 +253,7 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
         public Image Image { get; set; }
         public bool Custom { get; set; }
         public bool IsNewTrigger { get; set; }
+        public bool IsArena { get; set; }
     }
 
     // Creates an icon for each trigger and sets its position into the bounds of the mesh
@@ -256,6 +292,10 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
 
         // Scale icon size
         var triggerSize = trigger.RawData.GetEncapsulatingSize();
+        if (trigger.IsArena)
+        {
+            triggerSize = new Vector3(130, 80, 6);
+        }
 
         var width = Mathf.Max(_defaultIconWidth, triggerSize.x * pixelsPerUnit);
         var height = Mathf.Max(_defaultIconWidth, triggerSize.y * pixelsPerUnit);
