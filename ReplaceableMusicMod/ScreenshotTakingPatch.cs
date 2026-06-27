@@ -31,6 +31,6 @@ public static class ScreenshotTakingPatch
         var arena = LevelController.Instance.GetCurrentArena();
         if (arena == null)
             return;
-        ScreenshotGenerator.GenerateScreenshotWithDelay(arena.arenaID, 3);
+        ScreenshotGenerator.GenerateScreenshotWithDelay(arena.arenaID, 3.3f);
     }
 }
