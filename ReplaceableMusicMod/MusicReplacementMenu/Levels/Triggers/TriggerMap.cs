@@ -19,10 +19,12 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
     private bool _selected;
 
     private int _selectionIndex;
+    private LevelDefinition _levelDefinition;
     private EditableTrigger[] _triggers;
     private EditableTrigger[] _newTriggers;
     private MusicSwapPopup _musicSwap;
     private LevelEditorMenu _levelEditor;
+    private ScreenshotPreview _preview;
 
     private Text _selectionInfoText;
 
@@ -113,10 +115,63 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
             a.RawData.Center.X.CompareTo(b.RawData.Center.X));
 
         var map = element.gameObject.AddComponent<TriggerMap>();
+        map._levelDefinition = levelDefinition;
         map._triggers = editableTriggers;
         map._newTriggers = newTriggers;
         map.CalculateBounds();
         map.BuildMap();
+        
+        // Setup screenshot UI
+        
+        var screenshotRect = new GameObject("ScreenshotContainer").AddComponent<RectTransform>();
+        screenshotRect.SetParent(element, false);
+        screenshotRect.localScale = Vector3.one;
+
+        float previewWidth = MapHeight * 16f / 9f;
+
+        screenshotRect.anchorMin = new Vector2(1f, 0.5f);
+        screenshotRect.anchorMax = new Vector2(1f, 0.5f);
+        screenshotRect.pivot = new Vector2(1f, 0.5f);
+        screenshotRect.anchoredPosition = Vector2.zero;
+        screenshotRect.sizeDelta = new Vector2(previewWidth, MapHeight);
+        var backgroundImage = screenshotRect.gameObject.AddComponent<Image>();
+        backgroundImage.color = new Color(0.2f, 0.2f, 0.2f);
+
+        // Question mark
+        var textGameObject = new GameObject("QuestionMark");
+        var textRect = textGameObject.AddComponent<RectTransform>();
+        textGameObject.transform.SetParent(screenshotRect, false);
+
+        textRect.anchorMin = Vector2.zero;
+        textRect.anchorMax = Vector2.one;
+        textRect.offsetMin = Vector2.zero;
+        textRect.offsetMax = Vector2.zero;
+
+        var text = textGameObject.AddComponent<Text>();
+        text.text = "?";
+        text.alignment = TextAnchor.MiddleCenter;
+        text.fontSize = 130;
+        text.color = Color.white;
+        text.raycastTarget = false;
+        text.font = MusicMenuBuilder.ButtonFont;
+
+        // Image
+        var imageGameObject = new GameObject("ScreenshotImage");
+        var imageRect = imageGameObject.AddComponent<RectTransform>();
+        imageGameObject.transform.SetParent(screenshotRect, false);
+
+        imageRect.anchorMin = Vector2.zero;
+        imageRect.anchorMax = Vector2.one;
+        imageRect.offsetMin = Vector2.zero;
+        imageRect.offsetMax = Vector2.zero;
+
+        var previewImage = imageGameObject.AddComponent<RawImage>();
+        
+        // Finalize preview
+        var preview = screenshotRect.gameObject.AddComponent<ScreenshotPreview>();
+        preview.image = previewImage;
+        map._preview = preview;
+        
         return map;
     }
     
@@ -153,6 +208,7 @@ public class TriggerMap : MusicEditorElementBase, ISelectableElement
             }
             _triggers[i].Image.color = color;
         }
+        _preview.UpdateScreenshot(_levelDefinition.levelName, _triggers[_selectionIndex].RawData.Hash);
     }
 
     private string GetText()
