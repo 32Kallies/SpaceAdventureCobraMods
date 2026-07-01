@@ -62,6 +62,11 @@ public static class LevelMusicPatcher
 
         foreach (var levelData in LevelOverrideManager.Data.GetLevels())
         {
+            if (levelData.Key != LevelController.Instance.level)
+            {
+                continue;
+            }
+            
             foreach (var (hashString, clip) in levelData.Value.BuildTriggerReplacementsDictionary())
             {
                 if (clip <= 0)
@@ -116,6 +121,11 @@ public static class LevelMusicPatcher
 
         foreach (var levelData in LevelOverrideManager.Data.GetLevels())
         {
+            if (levelData.Key != LevelController.Instance.level)
+            {
+                continue;
+            }
+            
             foreach (var (hashString, clip) in levelData.Value.BuildTriggerReplacementsDictionary())
             {
                 if (clip <= 0)
