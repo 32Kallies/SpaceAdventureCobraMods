@@ -13,15 +13,6 @@ public static class Patches
         __instance.gameObject.AddComponent<CameraZoomBehavior>().controller = __instance;
     }
     
-    /*
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(Spline), nameof(CameraController.Start))]
-    public static void CameraStartPostfix(CameraController __instance)
-    {
-        __instance.gameObject.AddComponent<CameraZoomBehavior>().controller = __instance;
-    }
-    */
-
     private static float _prevOffsetX; 
     private static float _prevOffsetY;
     private static float _smoothing = 2f;
