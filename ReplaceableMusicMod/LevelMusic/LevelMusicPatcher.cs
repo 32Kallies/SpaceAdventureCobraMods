@@ -138,8 +138,6 @@ public static class LevelMusicPatcher
                     Plugin.Logger.LogError($"Failed to parse hash for trigger '{hash}' in level {hashString}.");
                     continue;
                 }
-                
-                Plugin.Logger.LogInfo($"Patching level arena trigger '{hash}'.");
 
                 if (!arenas.TryGetValue(hash, out var trigger))
                 {
@@ -150,6 +148,7 @@ public static class LevelMusicPatcher
 
                 var eClip = (audioSelectionData.eCLIP)clip;
                 trigger.arenaMusic.EnumValue = eClip;
+                Plugin.Logger.LogInfo($"Patching level arena trigger '{hash}'.");
             }
         }
     }
