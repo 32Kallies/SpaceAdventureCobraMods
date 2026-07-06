@@ -26,11 +26,10 @@ public static class ScreenshotTakingPatch
     
     [HarmonyPostfix]
     [HarmonyPatch(typeof(LevelController), nameof(LevelController.StartArena))]
-    public static void ArenaStartPostfix()
+    public static void ArenaStartPostfix(NmiArena nmiArena)
     {
-        var arena = LevelController.Instance.GetCurrentArena();
-        if (arena == null)
+        if (nmiArena == null)
             return;
-        ScreenshotGenerator.GenerateScreenshotWithDelay(arena.arenaID, 3.3f);
+        ScreenshotGenerator.GenerateScreenshotWithDelay(nmiArena.arenaID, 3.3f);
     }
 }
