@@ -28,6 +28,17 @@ public class SimilarTriggersGroup
 
     public string GetFilePathToPreviewScreenshotForTriggerOrNull(string levelName, EditableTrigger trigger)
     {
+        var path = ScreenshotGenerator.GetScreenshotFilePath(levelName, trigger.RawData.Hash);
+        var exists = File.Exists(path);
+        if (exists)
+        {
+            return path;
+        }
+
+        return null;
+        
+        /*
+         LOGIC FOR ACTUAL POSITIONAL GROUPS WHICH IS NO LONGER RELEVANT DUE TO INACCURATE ARENA POSITIONS
         if (!_positionalHashByHash.TryGetValue(trigger.RawData.Hash, out var positionalHash))
         {
             Plugin.Logger.LogWarning("Failed to get positional hash for trigger: " + trigger);
@@ -50,5 +61,6 @@ public class SimilarTriggersGroup
         }
 
         return null;
+        */
     }
 }
