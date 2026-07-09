@@ -24,7 +24,9 @@ public static class Patches
         var sources = AudioController.Audio.audioSrc;
         foreach (var source in sources)
         {
-            if (source.volTarget == 0)
+            var audioSource = source.asrc;
+            bool shouldStop = audioSource.clip != null && !audioSource.clip.name.StartsWith("mus_loop_main_theme");
+            if (shouldStop)
             {
                 Plugin.Logger.LogDebug("Stopping unused song");
                 source.asrc.Stop();
