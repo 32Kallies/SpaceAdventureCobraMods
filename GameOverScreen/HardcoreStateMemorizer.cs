@@ -19,7 +19,8 @@ public class HardcoreStateMemorizer : MonoBehaviour
         {
             return Instance.isHardcore;
         }
-        Plugin.Logger.LogWarning("Failed to find HardcoreStateMemorizer!");
+        // Nonissue, no logging needed
+        // Plugin.Logger.LogWarning("Failed to find HardcoreStateMemorizer!");
         return Plugin.HardcoreConfig.Value;
     }
 }

@@ -5,14 +5,23 @@ using UnityEngine;
 
 namespace GameOverScreen.Patches;
 
-[HarmonyPatch(typeof(CobraCharacter), nameof(CobraCharacter.areAllCobraDead))]
+[HarmonyPatch]
 public static class DeathPatch
 {
     private static bool _setAllCobraDead;
     private static float _timeCanShowGameOverScreenAgain;
 
     private static int c;
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(CobraCharacter), nameof(CobraCharacter.Start))]
+    public static void StartPostfix()
+    {
+        c = 0;
+    }
     
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(CobraCharacter), nameof(CobraCharacter.areAllCobraDead))]
     public static void Postfix(CobraCharacter __instance, ref bool __result)
     {
         // If multiplayer, use normal behavior
