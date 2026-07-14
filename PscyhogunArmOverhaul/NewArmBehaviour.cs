@@ -53,6 +53,17 @@ public class NewArmBehaviour : MonoBehaviour
         if (_puttingArmBackOn || _takingArmOff)
             return;
 
+        if (character.isDieThenTeleportBackStarted)
+        {
+            return;
+        }
+        
+        if (character.timeSinceMelee < character.melee.noShootAfterMeleeDelay &&
+            character.animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.23f)
+        {
+            return;
+        }
+
         if (_prostheticOn && TokenController.GetTokenValue(Token.HardCodedTokens.ForcePsychogunOff) <= 1)
         {
             if (Input.GetKeyDown(Plugin.KeyboardBinding.Value) || GetRightStickClick())
@@ -86,6 +97,17 @@ public class NewArmBehaviour : MonoBehaviour
 
     public void OnFailToShootPsychogun()
     {
+        if (character.isDieThenTeleportBackStarted)
+        {
+            return;
+        }
+        
+        if (character.timeSinceMelee < character.melee.noShootAfterMeleeDelay &&
+            character.animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.23f)
+        {
+            return;
+        }
+        
         if (!_takingArmOff && !_puttingArmBackOn && _prostheticOn)
         {
             StartCoroutine(TakeArmOff(3f));
