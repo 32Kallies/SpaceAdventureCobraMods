@@ -15,8 +15,8 @@ public class SPlusRankColorizer : MonoBehaviour
             new(ParseHex("#FF3220FF"), 0.05f), // red
             new(ParseHex("#1DC510FF"), 0.24f), // green
             new(ParseHex("#1DC510FF"), 0.38f), // green
-            new(ParseHex("#443ABDFF"), 0.6f), // blue
-            new(ParseHex("#443ABDFF"), 0.73f), // blue
+            new(ParseHex("#2667ff"), 0.6f), // blue
+            new(ParseHex("#2667ff"), 0.73f), // blue
             new(ParseHex("#FF3220FF"), 0.89f) // red
         ]
     };
