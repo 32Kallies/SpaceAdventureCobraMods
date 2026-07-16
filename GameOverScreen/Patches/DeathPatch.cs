@@ -48,9 +48,14 @@ public static class DeathPatch
     private static IEnumerator RestartFromCheckpointCoroutine()
     {
         c = 0;
-        _timeCanShowGameOverScreenAgain = Time.time + 0.5f;
+        _timeCanShowGameOverScreenAgain = Time.time + 1.5f; // delay comes from CobraCharacter.DieThenTeleportBack
         _setAllCobraDead = true;
         yield return null;
         _setAllCobraDead = false;
+        yield return null;
+        if (CobraCharacter.Instance != null)
+            CobraCharacter.Instance.isDieThenTeleportBackStarted = false;
+        yield return null;
+        c = 0;
     }
 }

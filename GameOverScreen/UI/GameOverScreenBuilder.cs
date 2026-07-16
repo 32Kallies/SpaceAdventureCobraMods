@@ -29,6 +29,8 @@ public static class GameOverScreenBuilder
         gameOverScreen.restartCheckpointButton = AddButton(buttonsParent, "RESTART CHECKPOINT", GameOverScreenActions.RestartFromCheckpoint);
         gameOverScreen.restartStageButton = AddButton(buttonsParent, "RESTART STAGE", GameOverScreenActions.RestartStage);
         gameOverScreen.exitToMenuButton = AddButton(buttonsParent, "EXIT TO MENU", GameOverScreenActions.QuitToMainMenu);
+
+        canvas.AddComponent<GameOverScreenMute>();
     }
 
     private static NUIButton AddButton(RectTransform parent, string text, Action action)

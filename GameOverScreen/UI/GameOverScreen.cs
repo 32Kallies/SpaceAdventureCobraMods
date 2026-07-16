@@ -7,7 +7,8 @@ public class GameOverScreen : MonoBehaviour
 {
     public static GameOverScreen Instance;
 
-    public float buttonReadyDelay = 0.9f;
+    public float buttonMoveDelay = 1f;
+    public float buttonPressDelay = 1.01f;
     
     public NUIButton restartStageButton;
     public NUIButton restartCheckpointButton;
@@ -15,12 +16,24 @@ public class GameOverScreen : MonoBehaviour
     
     private List<NUIButton> _buttons;
     private int _buttonChoice;
-    private float _timeButtonsReady;
+    private float _startTime;
     private audioSelectionData.eCLIP _silence;
+
+    private bool _pressedAny;
+    
+    public static bool IsScreenShown { get; private set; }
 
     private void Awake()
     {
+        if (Instance != null)
+        {
+            Plugin.Logger.LogError("Multiple GameOverScreens found! Destroying new instance");
+            Destroy(gameObject);
+            return;
+        }
+        
         Instance = this;
+        IsScreenShown = true;
     }
 
     private void Start()
@@ -60,7 +73,7 @@ public class GameOverScreen : MonoBehaviour
         _buttons.Add(restartStageButton);
         _buttons.Add(exitToMenuButton);
         UpdateSelectedButton();
-        _timeButtonsReady = Time.time + buttonReadyDelay;
+        _startTime = Time.realtimeSinceStartup;
     }
 
     private void Update()
@@ -72,13 +85,15 @@ public class GameOverScreen : MonoBehaviour
             audio.ForceMusicThisFrame(_silence, false, 1337);
         }
 
-        if (Time.time < _timeButtonsReady) return;
+        if (_pressedAny) return;
+        if (Time.realtimeSinceStartup < _startTime + buttonMoveDelay) return;
         
         UIController.HandleCursor(ref _buttonChoice, _buttons.Count, 1, 2,
             _allowbuttonscycle: false, UIFooter.PREDEFINEDTYPE.GENERIC_VALIDATE, delegate
         {
             _buttons[_buttonChoice].TrigClick(delegate
             {
+                if (Time.realtimeSinceStartup < _startTime + buttonPressDelay) return;
                 var customButton = _buttons[_buttonChoice].GetComponent<CustomButton>();
                 if (customButton == null)
                 {
@@ -88,6 +103,8 @@ public class GameOverScreen : MonoBehaviour
                 {
                     customButton.Click();
                 }
+
+                _pressedAny = true;
             });
         });
 
@@ -108,5 +125,10 @@ public class GameOverScreen : MonoBehaviour
         {
             Destroy(Instance.gameObject);
         }
+    }
+
+    private void OnDestroy()
+    {
+        IsScreenShown = false;
     }
 }

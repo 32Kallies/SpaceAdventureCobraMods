@@ -9,6 +9,12 @@ public static class GameOverScreenActions
 {
     public static void RestartFromCheckpoint()
     {
+        Plugin.RunCoroutineOnPlugin(RestartFromCheckpointCoroutine());
+    }
+
+    private static IEnumerator RestartFromCheckpointCoroutine()
+    {
+        yield return new WaitForSeconds(1f);
         GameOverScreen.Close();
         DeathPatch.RestartFromCheckpoint();
     }

@@ -10,7 +10,7 @@ public class FadeInCanvasGroup : MonoBehaviour
 
     private void Update()
     {
-        _alpha = Mathf.Clamp01(_alpha + Time.deltaTime / fadeDuration);
+        _alpha = Mathf.Clamp01(_alpha + Time.unscaledDeltaTime / fadeDuration);
         group.alpha = _alpha;
         if (_alpha >= 1f)
         {
