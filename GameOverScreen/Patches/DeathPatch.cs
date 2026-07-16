@@ -45,6 +45,7 @@ public static class DeathPatch
         Plugin.RunCoroutineOnPlugin(RestartFromCheckpointCoroutine());
     }
     
+    // This WILL generally throw an exception, causing DeathPart2 to be cut off early, hence SimulateRespawn below
     private static IEnumerator RestartFromCheckpointCoroutine()
     {
         c = 0;
@@ -55,7 +56,44 @@ public static class DeathPatch
         yield return null;
         if (CobraCharacter.Instance != null)
             CobraCharacter.Instance.isDieThenTeleportBackStarted = false;
+        CameraController.Instance.SetOverrideZDelta(-1f, instant: false);
         yield return null;
+        SimulateRespawn(CobraCharacter.Instance);
         c = 0;
+    }
+
+    // Simulates some of the behavior of DeathPart2
+    private static void SimulateRespawn(CobraCharacter @this)
+    {
+        // isTokenDeath is a parameter in DeathPart2
+        const bool isTokenDeath = false;
+        
+        if (@this == null)
+        {
+            Plugin.Logger.LogError("Cobra instance not found!");
+            return;
+        }
+        
+        TokenController.SetTokenValue(Token.HardCodedTokens.NbAllCobraDeath, 1, Token.ValueOperator.Add);
+        CameraController.Instance.SetOverrideYDelta(0f);
+        CameraController.Instance.SetOverrideZDelta(-1f, instant: false);
+        @this.cameraController.UpdateWithSplineProperties(-1f, @this.gameObject, Vector3.up, isCameraDamp: false);
+        @this.ResetTokensToLastCheckpointValue();
+        if (LevelController.Instance != null)
+        {
+            LevelController.Instance.ChangeState(LevelController.State.Respawn, @this.isLogMain ? "DieThenTeleportBack" : null);
+        }
+        @this.AnimatorUpdate(1f, force: true);
+        @this.AnimatorUpdate(1f, force: true);
+        if (UIFade.Instance != null && !isTokenDeath)
+        {
+            UIFade.Instance.FadeIn(0.7f, 0.2f, @this.isLogMain ? "DieThenTeleportBack" : null);
+        }
+        /* Commented out to remove an annoying warning mainly
+        if (isTokenDeath)
+        {
+            UIFade.Instance.ForceFadeIn(0.7f, 0.2f, @this.isLogMain ? "DieThenTeleportBack" : null);
+        }
+        */
     }
 }
