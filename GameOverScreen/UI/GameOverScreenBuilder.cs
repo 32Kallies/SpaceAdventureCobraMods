@@ -45,7 +45,7 @@ public static class GameOverScreenBuilder
         newButtonRect.localEulerAngles = Vector3.zero;
         newButtonRect.sizeDelta = new Vector2(512, 60);
         var textComponent = newButtonRect.GetComponentInChildren<Text>();
-        Object.DestroyImmediate(textComponent.GetComponent<TextLocalize>());
+        Object.Destroy(textComponent.GetComponent<TextLocalize>());
         textComponent.text = text;
         
         textComponent.resizeTextMaxSize = textComponent.fontSize;
