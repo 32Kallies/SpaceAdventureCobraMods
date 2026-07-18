@@ -14,7 +14,6 @@ public class DestroyShieldBehavior : MonoBehaviour
     {
         _fullyCharged = FullyChargedShotTracker.GetDidPlayerShootFullyChargedShot();
         _destroyRevolverShieldRadius = GetComponent<Projectile>().overlapSphereRadiusAtInit;
-        Debug.Log("Destroy revolver shield radius: " + _destroyRevolverShieldRadius);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -25,7 +24,10 @@ public class DestroyShieldBehavior : MonoBehaviour
         var damageable = other.GetComponentInParent<IDamageable>();
         if (damageable != null)
         {
-            damageable.TakeDamage(null, 1, 0, Damage.DamageType.Melee, Vector3.up, other.transform.position, other);
+            if (other.GetComponentInParent<NmiProtection>())
+            {
+                damageable.TakeDamage(null, 1f, 0, Damage.DamageType.Melee, Vector3.up, other.transform.position, other);
+            }
         }
     }
 
@@ -42,7 +44,9 @@ public class DestroyShieldBehavior : MonoBehaviour
             var protection = SharedBuffer[i].GetComponentInParent<NmiProtection>();
             if (protection != null)
             {
-                protection.ManageDestruction(true);
+                var destructible = protection.GetComponentInChildren<Destructible>();
+                if (destructible != null && destructible.destructibleBy.HasFlag(Damage.DamageTypeFlag.Revolver))
+                    protection.ManageDestruction(true);
             }
         }
     }
