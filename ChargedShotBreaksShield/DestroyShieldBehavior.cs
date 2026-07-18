@@ -22,16 +22,10 @@ public class DestroyShieldBehavior : MonoBehaviour
         if (!_fullyCharged)
             return;
 
-        var protection = other.GetComponentInParent<NmiProtection>();
-        if (protection != null)
+        var damageable = other.GetComponentInParent<IDamageable>();
+        if (damageable != null)
         {
-            protection.ManageDestruction(true);
-        }
-        var field = other.GetComponentInParent<NmiField>();
-        if (field != null)
-        {
-            if (field.gameObject.name == "NmiField_FieldForceSpheric")
-                Destroy(field.gameObject);
+            damageable.TakeDamage(null, 1, 0, Damage.DamageType.Melee, Vector3.up, other.transform.position, other);
         }
     }
 
