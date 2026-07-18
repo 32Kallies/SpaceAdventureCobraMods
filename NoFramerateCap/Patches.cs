@@ -39,6 +39,44 @@ public static class Patches
         __result = Vector3.RotateTowards(direction, idealDirection, degPerFrame * frameDuration * (MathF.PI / 180f) * CustomFramerateUtils.GetNewFramerateFloat() / 60, 0f);
         return false;
     }
+    
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(CutscenePlayer), nameof(CutscenePlayer.Start))]
+    public static void FixZigobaBossTriggerForAfterCutscene(CutscenePlayer __instance)
+    {
+        if (LevelController.Instance == null ||
+            LevelController.Instance.level != LevelController.Level.EP02_LVL03_ZigobaBase_BossZigoba)
+            return;
+        
+        if (!__instance.gameObject.name.Contains("Prefab_CS_Sequence_CobraArrivalLeft",
+                StringComparison.OrdinalIgnoreCase)) return;
+        
+        if (__instance.tokensToSetOnEnd == null)
+            __instance.tokensToSetOnEnd = new List<TokenToSet>();
+        
+        var tokens = __instance.tokensToSetOnEnd;
+        
+        if (tokens.Count == 0)
+        {
+            tokens.Add(GetZigobaTriggerEnablementToken());
+            return;
+        }
+
+        for (int i = 0; i < tokens.Count; i++)
+        {
+            if (tokens[i].token is { id: 0, type: Token.TokenType.System })
+            {
+                tokens[i] = GetZigobaTriggerEnablementToken();
+                return;
+            }
+        }
+
+        TokenToSet GetZigobaTriggerEnablementToken()
+        {
+            Plugin.Logger.LogMessage("Fixing Zigoba fight trigger");
+            return new TokenToSet(Token.TokenType.Level, 53, 1);
+        }
+    }
 }
 
 [HarmonyPatch(typeof(NmiPatrouille), nameof(NmiPatrouille.Update))]
