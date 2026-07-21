@@ -14,6 +14,7 @@ public class Plugin : BaseUnityPlugin
     public static ConfigEntry<float> StandingStillDodgeSoundVolumeMultiplier;
     public static ConfigEntry<float> InAirDodgeSoundVolumeMultiplier;
     public static ConfigEntry<bool> DisableDodgeVfx;
+    public static ConfigEntry<bool> DodgeMaterialSwapFix;
     public static ConfigEntry<bool> DisableDodgeTrailVfx;
     
     private void Awake()
@@ -38,10 +39,16 @@ public class Plugin : BaseUnityPlugin
             "If true, the player's blue-green dodging visual effect will be disabled."
         );
         
+        DodgeMaterialSwapFix = Config.Bind("VFX",
+            "DodgeMaterialSwapFix",
+            true,
+            "If enabled, this will prevent Cobra from using the incorrect material when dodging or sliding."
+        );
+        
         DisableDodgeTrailVfx = Config.Bind("VFX",
             "DisableDodgeTrailVfx",
             true,
-            "If true, the player's blue-green dodging trail or 'afterglow' effect will be disabled."
+            "If this option is true, the player's blue-green dodging trail or 'afterglow' effect will be disabled."
         );
         
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());

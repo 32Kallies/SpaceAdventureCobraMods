@@ -27,6 +27,12 @@ public static class CobraPatches
             dependencies.successfulDodgeMat = __instance.defaultMats[0];
         }
 
+        if (Plugin.DodgeMaterialSwapFix.Value)
+        {
+            __instance.dodge.permaBlue = false;
+            __instance.dodge.successfulDodgeTime = 0;
+        }
+
         if (Plugin.DisableDodgeTrailVfx.Value)
         {
             var particles = __instance.particles;
