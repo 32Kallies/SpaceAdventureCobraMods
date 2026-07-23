@@ -21,13 +21,21 @@ public class DestroyShieldBehavior : MonoBehaviour
         if (!_fullyCharged)
             return;
 
-        var damageable = other.GetComponentInParent<IDamageable>();
-        if (damageable != null)
+        var protection = other.GetComponentInParent<NmiProtection>();
+        var field = other.GetComponentInParent<NmiField>();
+        if (protection != null && protection.type == NmiProtection.Type.FieldForce)
         {
-            if (other.GetComponentInParent<NmiProtection>())
-            {
-                damageable.TakeDamage(null, 1f, 0, Damage.DamageType.Melee, Vector3.up, other.transform.position, other);
-            }
+            protection.type = NmiProtection.Type.ShieldBasic;
+        }
+        else if (field != null && field.gameObject.name == "NmiField_FieldForceSpheric")
+        {
+            Destroy(field.gameObject);
+        }
+
+        var advance = other.GetComponentInParent<NmiAdvance>();
+        if (advance != null)
+        {
+            advance.bouclier.displaycoef = 0;
         }
     }
 
