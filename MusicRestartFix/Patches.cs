@@ -18,6 +18,14 @@ public static class Patches
     {
         KillStaleAudio();
     }
+    
+    // also includes restarting a level
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(CobraCharacter), nameof(CobraCharacter.OnLevelQuitFromPause))]
+    public static void OnLevelQuit()
+    {
+        KillStaleAudio();
+    }
 
     private static void KillStaleAudio()
     {
