@@ -5,7 +5,7 @@ namespace MusicReplacer.Utilities;
 public class TakeScreenshotOnEnterTrigger : MonoBehaviour
 {
     public audioForceMusicTrigger trigger;
-    public int hash;
+    public long hash;
 
     private bool _tookScreenshot;
     

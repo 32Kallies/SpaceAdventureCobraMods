@@ -21,7 +21,7 @@ public static class TriggerUtils
         throw new Exception("Trigger does not have a box or sphere collider!");
     }
 
-    public static int GenerateTriggerHash(Vector3 center, Vector3 size)
+    public static long GenerateTriggerHash(Vector3 center, Vector3 size)
     {
         int cx = Mathf.RoundToInt(center.x);
         int cy = Mathf.RoundToInt(center.y);
@@ -31,7 +31,7 @@ public static class TriggerUtils
         int sy = Mathf.RoundToInt(size.y);
         int sz = Mathf.RoundToInt(size.z);
 
-        return GetStableHash(cx, cy, cz, sx, sy, sz);
+        return (long)GetStableHash(cx, cy, cz, sx, sy, sz);
     }
     
     private static int GetStableHash(int cX, int cY, int cZ, int sX, int sY, int sZ)

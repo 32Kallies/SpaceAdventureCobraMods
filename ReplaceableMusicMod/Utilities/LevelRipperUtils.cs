@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using MusicReplacer.Arenas;
 using MusicReplacer.Data;
 using MusicReplacer.LevelMusic.Data;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace MusicReplacer.Utilities;
@@ -75,14 +77,14 @@ public static class LevelRipperUtils
         data.DefaultMusic = (int)definition.defaultMusic.EnumValue;
         data.ArenaMusic = (int)definition.arenaMusic.EnumValue;
         
-        var triggers = new Dictionary<int, LevelTrigger>();
-        // 'includeInactive = true' currently throws exceptions on many levels! some levels are outdated due to this
+        var triggers = new Dictionary<long, LevelTrigger>();
+        // 'includeInactive = true' currently throws exceptions on many levels! some levels may be outdated due to this
         var musicTriggers = Object.FindObjectsOfType<audioForceMusicTrigger>(true);
         foreach (var trigger in musicTriggers)
         {
             var triggerData = new LevelTrigger();
             var dimensions = TriggerUtils.GetColliderDimensions(trigger.gameObject);
-            var hash = TriggerUtils.GenerateTriggerHash(dimensions.center, dimensions.size);
+            long hash = TriggerUtils.GenerateTriggerHash(dimensions.center, dimensions.size);
             triggerData.Type = dimensions.type;
             triggerData.Center = new SimpleVector3(dimensions.center);
             triggerData.Size = new SimpleVector3(dimensions.size);
@@ -94,17 +96,20 @@ public static class LevelRipperUtils
 
         data.LevelTriggers = triggers;
         
-        var arenaTriggers = new Dictionary<int, LevelArenaTrigger>();
-        var positionalHashByHash = new Dictionary<int, int>();
+        var arenaTriggers = new Dictionary<long, LevelArenaTrigger>();
         var arenaInstances = Object.FindObjectsOfType<NmiArena>(true);
         foreach (var arena in arenaInstances)
         {
+            if (IsResettableInstance(arena.transform))
+            {
+                continue;
+            }
+            
             var triggerData = new LevelArenaTrigger();
             var dimensions = TriggerUtils.GetColliderDimensions(arena.gameObject);
-            var positionalHash = TriggerUtils.GenerateTriggerHash(dimensions.center, dimensions.size);
-            var hash = arena.arenaID;
+            long hash = ArenaIdentifier.GetArenaId(arena);
             triggerData.Type = dimensions.type;
-            triggerData.Center = new SimpleVector3(dimensions.center);
+            triggerData.Center = new SimpleVector3(GetBestPositionForArena(arena));
             triggerData.Size = new SimpleVector3(dimensions.size);
             triggerData.Radius = dimensions.size.x / 2;
             triggerData.Hash = hash;
@@ -115,17 +120,12 @@ public static class LevelRipperUtils
             triggerData.PlayArenaWallOut = arena.playArenaWallOut;
             triggerData.DestroyAtEnd = arena.isDestroyAtEnd;
             
-            // Catch this common "mistake" from the devs (could be a mistake from my past self, who knows)
-            if (arenaTriggers.ContainsKey(hash)
-                && positionalHashByHash.TryGetValue(hash, out var otherPositionalHash)
-                && positionalHash == otherPositionalHash)
+            if (arenaTriggers.ContainsKey(hash))
             {
-                Plugin.Logger.LogWarning(
-                    $"Two arenas with same ID ({hash}) found. Since their positions are identical, this is fine.");
+                Plugin.Logger.LogWarning($"Two arenas with same ID ({hash}) found.");
                 continue;
             }
 
-            positionalHashByHash[hash] = positionalHash;
             arenaTriggers.Add(triggerData.Hash, triggerData);
         }
         
@@ -133,5 +133,48 @@ public static class LevelRipperUtils
         data.ArenaTriggers = arenaTriggers;
         
         return data;
+    }
+
+    public static bool IsResettableInstance(Transform transform)
+    {
+        if (transform.gameObject.name.Contains("Resettable_Instance(", StringComparison.OrdinalIgnoreCase)) return true;
+        if (transform.parent == null) return false;
+        return IsResettableInstance(transform.parent);
+    }
+
+    private static Vector3 GetBestPositionForArena(NmiArena arena)
+    {
+        var defaultPos = arena.transform.position;
+        
+        var waves = arena.transform.Find("Waves");
+        if (waves == null || waves.childCount == 0)
+        {
+            return defaultPos;
+        }
+
+        var firstWave = waves.GetChild(0);
+        if (firstWave == null || firstWave.childCount == 0)
+        {
+            return defaultPos;
+        }
+
+        var firstEnemy = firstWave.GetChild(0);
+
+        if (firstEnemy != null && firstEnemy.name.Equals("label", StringComparison.OrdinalIgnoreCase))
+        {
+            if (firstWave.childCount < 2)
+            {
+                return defaultPos;
+            }
+            
+            firstEnemy = firstWave.GetChild(1);
+        }
+        
+        if (firstEnemy == null)
+        {
+            return defaultPos;
+        }
+
+        return firstEnemy.position;
     }
 }

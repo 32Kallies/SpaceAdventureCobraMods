@@ -7,8 +7,7 @@ namespace MusicReplacer.LevelMusic.Data;
 [Serializable]
 public class LevelTrigger
 {
-    // NOTE - for LevelArenaTriggers, this is equivalent to NmiArena.arenaId and multiple triggers can have the same hash
-    public int Hash { get; set; }
+    public long Hash { get; set; }
     public int MusicClip { get; set; }
     public PrimitiveType Type { get; set; }
     public float Radius { get; set; }

@@ -6,8 +6,8 @@ namespace MusicReplacer.MusicReplacementMenu.Levels.Triggers;
 
 public class SimilarTriggersGroup
 {
-    private readonly Dictionary<int, int> _positionalHashByHash = new();
-    private readonly Dictionary<int, HashSet<EditableTrigger>> _triggerGroupByPositionalHash = new();
+    private readonly Dictionary<long, long> _positionalHashByHash = new();
+    private readonly Dictionary<long, HashSet<EditableTrigger>> _triggerGroupByPositionalHash = new();
 
     public void AddTrigger(EditableTrigger trigger)
     {

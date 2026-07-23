@@ -1,4 +1,5 @@
 using HarmonyLib;
+using MusicReplacer.Arenas;
 using MusicReplacer.Utilities;
 
 namespace MusicReplacer;
@@ -30,6 +31,6 @@ public static class ScreenshotTakingPatch
     {
         if (nmiArena == null)
             return;
-        ScreenshotGenerator.GenerateScreenshotWithDelay(nmiArena.arenaID, 3.3f);
+        ScreenshotGenerator.GenerateScreenshotWithDelay(ArenaIdentifier.GetArenaId(nmiArena), 3.3f);
     }
 }

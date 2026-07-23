@@ -1,4 +1,5 @@
 using HarmonyLib;
+using MusicReplacer.Arenas;
 using MusicReplacer.CustomTriggers;
 using MusicReplacer.MusicReplacementMenu;
 using MusicReplacer.Utilities;
@@ -55,7 +56,7 @@ public static class TriggerQueryPatcher
         DisplayText(text);
     }
 
-    private static void TryTakeScreenshot(int triggerId)
+    private static void TryTakeScreenshot(long triggerId)
     {
         if (CobraVideoPlayer.isPlayingVideo)
             return;
@@ -64,7 +65,7 @@ public static class TriggerQueryPatcher
         ScreenshotGenerator.GenerateScreenshotForTrigger(triggerId);
     }
 
-    private static int GetTriggerIdOrZero(Transform playerTransform)
+    private static long GetTriggerIdOrZero(Transform playerTransform)
     {
         var colliders = Physics.OverlapSphere(playerTransform.position, 1f, -1, QueryTriggerInteraction.Collide);
         foreach (var collider in colliders)
@@ -80,7 +81,7 @@ public static class TriggerQueryPatcher
         return 0;
     }
     
-    private static int GetArenaIdOrZero()
+    private static long GetArenaIdOrZero()
     {
         if (!LevelController.Instance.IsInArena())
             return 0;
@@ -90,7 +91,7 @@ public static class TriggerQueryPatcher
         if (arena == null)
             return 0;
         
-        return arena.arenaID;
+        return ArenaIdentifier.GetArenaId(arena);
     }
 
     private static string GetCoordinatesText()

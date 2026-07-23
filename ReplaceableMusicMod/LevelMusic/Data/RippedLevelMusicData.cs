@@ -10,6 +10,6 @@ public class RippedLevelMusicData
     public int LevelId { get; set; }
     public int DefaultMusic { get; set; }
     public int ArenaMusic { get; set; }
-    public Dictionary<int, LevelTrigger> LevelTriggers { get; set; }
-    public Dictionary<int, LevelArenaTrigger> ArenaTriggers { get; set; }
+    public Dictionary<long, LevelTrigger> LevelTriggers { get; set; }
+    public Dictionary<long, LevelArenaTrigger> ArenaTriggers { get; set; }
 }
