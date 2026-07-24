@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using CobraSoundReplacer.API;
 using HarmonyLib;
@@ -14,6 +13,9 @@ namespace MusicReplacer.LevelMusic;
 [HarmonyPatch]
 public static class LevelMusicPatcher
 {
+    // -1 = failed to find, 0 = found, > 0 = found (extra?)
+    private static Dictionary<long, int> failedToFind;
+    
     [HarmonyPatch(typeof(LevelController), nameof(LevelController.Start))]
     [HarmonyPrefix]
     public static void PatchLevelMusic(LevelController __instance)
@@ -24,8 +26,9 @@ public static class LevelMusicPatcher
             Plugin.Logger.LogWarning("No level definition found. Skipping.");
             return;
         }
+        
         var overrideMusic = LevelOverrideManager.Data.GetLevelData(levelDef.level);
-
+        
         var defaultMusic = overrideMusic.AccessDefaultMusic().GetEClip();
         if (defaultMusic != 0)
         {
@@ -37,28 +40,57 @@ public static class LevelMusicPatcher
         {
             levelDef.arenaMusic.EnumValue = (audioSelectionData.eCLIP)arenaMusic;
         }
+        
+        failedToFind = new Dictionary<long, int>();
 
         PatchTriggers();
-        AddCustomTriggers(levelDef);
     }
 
     [HarmonyPatch(typeof(LevelController), nameof(LevelController.Start))]
     [HarmonyPostfix]
-    public static void PatchArenaMusicPostfix(LevelController __instance)
+    public static void PatchLevelMusicPostfixPatch(LevelController __instance)
     {
-        Plugin.StartCoroutineOnPlugin(PatchArenasWithDelay(__instance));
+        var levelDef = GameController.Instance.GetCurrentLevelDefinition();
+        if (levelDef == null)
+        {
+            Plugin.Logger.LogWarning("No level definition found. Skipping.");
+            return;
+        }
+
+        failedToFind ??= new Dictionary<long, int>();
+        PatchArenas(__instance);
+
+        foreach (var failed in failedToFind)
+        {
+            if (failed.Value == -1)
+                Plugin.Logger.LogError("Failed to find trigger or arena by hash: " + failed.Key);
+        }
+
+        AddCustomTriggers(levelDef);
     }
 
     private static void PatchTriggers()
     {
-        var triggers = new Dictionary<long, audioForceMusicTrigger>();
-        var musicTriggers = Object.FindObjectsOfType<audioForceMusicTrigger>();
+        var triggersByHash = new Dictionary<long, List<audioForceMusicTrigger>>();
+        var musicTriggers = Object.FindObjectsOfType<audioForceMusicTrigger>(true);
         foreach (var trigger in musicTriggers)
         {
             var dimensions = TriggerUtils.GetColliderDimensions(trigger.gameObject);
             var hash = TriggerUtils.GenerateTriggerHash(dimensions.center, dimensions.size);
-            triggers.Add(hash, trigger);
             Plugin.Logger.LogDebug($"{hash}\t{trigger}");
+
+            List<audioForceMusicTrigger> listToAddTo;
+            if (triggersByHash.TryGetValue(hash, out var triggersList))
+            {
+                listToAddTo = triggersList;
+            }
+            else
+            {
+                listToAddTo = new List<audioForceMusicTrigger>();
+                triggersByHash.Add(hash, listToAddTo);
+            }
+
+            listToAddTo.Add(trigger);
         }
 
         foreach (var levelData in LevelOverrideManager.Data.GetLevels())
@@ -81,27 +113,27 @@ public static class LevelMusicPatcher
                     continue;
                 }
                 
-                Plugin.Logger.LogInfo($"Patching level music trigger '{hash}'.");
+                Plugin.Logger.LogInfo($"Checking level music trigger '{hash}'.");
 
-                if (!triggers.TryGetValue(hash, out var trigger))
+                if (!triggersByHash.TryGetValue(hash, out var triggers))
                 {
-                    Plugin.Logger.LogError($"Failed to find trigger by hash '{hash}'.");
+                    failedToFind[hash] = failedToFind.GetValueOrDefault(hash) - 1;
                     continue;
                 }
 
-                var eClip = (audioSelectionData.eCLIP)clip;
-                trigger.musicClip.EnumValue = eClip;
-                trigger.m_Clip = eClip;
+                Plugin.Logger.LogInfo($"Patching {triggers.Count} music triggers by '{hash}'.");
+
+                foreach (var trigger in triggers)
+                {
+                    Plugin.Logger.LogInfo($"Patching level music trigger '{hash}'.");
+                
+                    var eClip = (audioSelectionData.eCLIP)clip;
+                    trigger.musicClip.EnumValue = eClip;
+                    trigger.m_Clip = eClip;
+                    failedToFind[hash] = failedToFind.GetValueOrDefault(hash) + 1;
+                }
             }
         }
-    }
-
-    // Necessary to prevent patching before the level is fully setup
-    private static IEnumerator PatchArenasWithDelay(LevelController level)
-    {
-        yield return new WaitUntil(() => CobraCharacter.Instance != null);
-        yield return new WaitForSeconds(1);
-        PatchArenas(level);
     }
     
     private static void PatchArenas(LevelController level)
@@ -148,7 +180,7 @@ public static class LevelMusicPatcher
 
                 if (!arenasByID.TryGetValue(hash, out var arenas))
                 {
-                    Plugin.Logger.LogError($"Failed to find arena by hash '{hash}'.");
+                    failedToFind[hash] = failedToFind.GetValueOrDefault(hash) - 1;
                     continue;
                 }
 
@@ -162,6 +194,7 @@ public static class LevelMusicPatcher
                     audioSelectionData.eCLIP oldClip = arena.arenaMusic.EnumValue;
                     var eClip = (audioSelectionData.eCLIP)clip;
                     arena.arenaMusic.EnumValue = eClip;
+                    failedToFind[hash] = failedToFind.GetValueOrDefault(hash) + 1;
                     Plugin.Logger.LogInfo($"Patching level arena trigger by hash '{hash}' (original music was: {oldClip}).");
                 }
             }
