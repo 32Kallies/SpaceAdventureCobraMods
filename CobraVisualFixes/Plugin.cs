@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
@@ -14,6 +15,7 @@ public class Plugin : BaseUnityPlugin
     internal static new ManualLogSource Logger;
 
     internal static Texture2D NewTexture { get; private set; }
+    internal static Texture2D NewSubsurfaceScatteringTexture { get; private set; }
 
     private void Awake()
     {
@@ -25,28 +27,40 @@ public class Plugin : BaseUnityPlugin
         // LOAD TEXTURE
         
         var modFolder = Path.GetDirectoryName(assembly.Location);
-        var textureFilePath = Path.Combine(modFolder, "NewCobraTexture.png");
-
-        byte[] fileData = File.ReadAllBytes(textureFilePath);
+        NewTexture = LoadTexture(Path.Combine(modFolder, "NewCobraTexture.png"), "NewCobraColorTexture");
+        NewSubsurfaceScatteringTexture = LoadTexture(Path.Combine(modFolder, "NewCobraSSSTexture.png"), "NewCobraSSSTexture");
         
-        // 2x2 is a placeholder size, will be replaced by LoadImage
-        var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false)
-        {
-            name = "NewCobraTexture"
-        };
-        
-        if (!texture.LoadImage(fileData))
-        {
-            Logger.LogError("Failed to decode texture!");
-            return;
-        }
-        
-        texture.wrapMode = TextureWrapMode.Repeat;
-        texture.filterMode = FilterMode.Bilinear;
-        NewTexture = texture;
-
         // LOG COMPLETION!
         
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
+    }
+
+    private static Texture2D LoadTexture(string path, string name)
+    {
+        try
+        {
+            byte[] fileData = File.ReadAllBytes(path);
+
+            // 2x2 is a placeholder size, will be replaced by LoadImage
+            var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false)
+            {
+                name = name
+            };
+
+            if (!texture.LoadImage(fileData))
+            {
+                Logger.LogError("Failed to decode texture!");
+                return null;
+            }
+
+            texture.wrapMode = TextureWrapMode.Repeat;
+            texture.filterMode = FilterMode.Bilinear;
+            return texture;
+        }
+        catch (Exception e)
+        {
+            Logger.LogError("Failed to load texture, exception thrown: " + e);
+            return null;
+        }
     }
 }

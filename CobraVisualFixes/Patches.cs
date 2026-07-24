@@ -9,6 +9,7 @@ public static class Patches
 {
     private static readonly int FloatMetalness = Shader.PropertyToID("_Float_metalness");
     private static readonly int AlbedoTextureProperty = Shader.PropertyToID("_Texture2D_alb");
+    private static readonly int SubsurfaceScatteringTextureProperty = Shader.PropertyToID("_Texture2D_sss");
     private const string CobraMaterialName = "mat_chr_Cobra_00";
 
     [HarmonyPostfix]
@@ -60,6 +61,7 @@ public static class Patches
                 if (Plugin.NewTexture != null)
                 {
                     material.SetTexture(AlbedoTextureProperty, Plugin.NewTexture);
+                    material.SetTexture(SubsurfaceScatteringTextureProperty, Plugin.NewSubsurfaceScatteringTexture);
                 }
                 else
                 {
