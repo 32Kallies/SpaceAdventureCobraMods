@@ -142,7 +142,7 @@ public class RuntimeAdditiveAnimation : MonoBehaviour
         }
 
         AnimatedBones = boneList.ToArray();
-        Plugin.Logger.LogMessage("Loaded additive animation from JSON: " + path);
+        Plugin.Logger.LogInfo("Loaded additive animation from JSON");
     }
 
     private Transform FindChildByName(Transform parent, string name)

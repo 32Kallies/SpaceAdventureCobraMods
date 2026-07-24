@@ -27,6 +27,9 @@ public class NewArmBehaviour : MonoBehaviour
     private bool _forceGrabArmModelEnabled;
 
     private GameObject _newFist;
+
+    private LevelController.Level _level;
+    private bool _johnsonDiscoveredPsychogun; // for level 1-2 only
     
     private void Start()
     {
@@ -38,6 +41,21 @@ public class NewArmBehaviour : MonoBehaviour
         Destroy(_newFist.GetComponent<ParentConstraint>());
 
         additiveAnimation.OnLateUpdate = DoLateUpdate;
+
+        if (LevelController.Instance != null)
+        {
+            _level = LevelController.Instance.level;
+        }
+
+        if (_level == LevelController.Level.EP01_LVL02_Casino_BossVaiken)
+        {
+            var position = character.transform.position;
+            _johnsonDiscoveredPsychogun = !(position.y is > -2 and < 2 && position.x is > 14 and < 60);
+        }
+        else
+        {
+            _johnsonDiscoveredPsychogun = true;
+        }
     }
 
     public bool GetCanShoot()
@@ -53,13 +71,7 @@ public class NewArmBehaviour : MonoBehaviour
         if (_puttingArmBackOn || _takingArmOff)
             return;
 
-        if (character.isDieThenTeleportBackStarted)
-        {
-            return;
-        }
-        
-        if (character.timeSinceMelee < character.melee.noShootAfterMeleeDelay &&
-            character.animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.23f)
+        if (!CanChangeArmState())
         {
             return;
         }
@@ -68,7 +80,14 @@ public class NewArmBehaviour : MonoBehaviour
         {
             if (Input.GetKeyDown(Plugin.KeyboardBinding.Value) || GetRightStickClick())
             {
-                StartCoroutine(TakeArmOff());
+                if (ShouldTakeArmOffInstantlyForEp1Lvl2())
+                {
+                    TakeArmOffInstantForEp1Lvl2();
+                }
+                else
+                {
+                    StartCoroutine(TakeArmOff());
+                }
             }
         }
         else if (!_prostheticOn && TokenController.GetTokenValue(Token.HardCodedTokens.ForcePsychogunOn) <= 1)
@@ -78,6 +97,32 @@ public class NewArmBehaviour : MonoBehaviour
                 StartCoroutine(PutArmBackOn());
             }
         }
+    }
+
+    private bool CanChangeArmState()
+    {
+        if (character.isDieThenTeleportBackStarted)
+        {
+            return false;
+        }
+
+        if (character.timeSinceMelee < character.melee.noShootAfterMeleeDelay &&
+            character.animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.23f)
+        {
+            return false;
+        }
+
+        // Disable psychogun opening at beginning of 1-2
+        if (_level == LevelController.Level.EP01_LVL02_Casino_BossVaiken)
+        {
+            var position = character.transform.position;
+            if (position.y is > -2 and < 2 && position.x is > 14 and < 60)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void DoLateUpdate()
@@ -97,20 +142,19 @@ public class NewArmBehaviour : MonoBehaviour
 
     public void OnFailToShootPsychogun()
     {
-        if (character.isDieThenTeleportBackStarted)
-        {
+        if (!CanChangeArmState())
             return;
-        }
-        
-        if (character.timeSinceMelee < character.melee.noShootAfterMeleeDelay &&
-            character.animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.23f)
-        {
-            return;
-        }
         
         if (!_takingArmOff && !_puttingArmBackOn && _prostheticOn)
         {
-            StartCoroutine(TakeArmOff(3f));
+            if (ShouldTakeArmOffInstantlyForEp1Lvl2())
+            {
+                TakeArmOffInstantForEp1Lvl2();
+            }
+            else
+            {
+                StartCoroutine(TakeArmOff(3f));
+            }
         }
     }
     
@@ -153,6 +197,20 @@ public class NewArmBehaviour : MonoBehaviour
 
         _prostheticOn = false;
         _takingArmOff = false;
+    }
+
+    private void TakeArmOffInstantForEp1Lvl2()
+    {
+        if (_takingArmOff)
+            return;
+        
+        Plugin.Logger.LogInfo("Taking arm off instantly");
+        SetToken(Token.HardCodedTokens.ForcePsychogunOn, true);
+        SetToken(Token.HardCodedTokens.ForcePsychogunOff, false);
+        _forceGrabArmModelEnabled = false;
+        _prostheticOn = false;
+        _takingArmOff = false;
+        _johnsonDiscoveredPsychogun = true;
     }
     
     private void PlayAdditiveAnimation(float speed = 1f, bool reverse = false)
@@ -198,5 +256,26 @@ public class NewArmBehaviour : MonoBehaviour
             return false;
         Joystick j = ReInput.controllers.Joysticks[0];
         return j.GetButton(10);
+    }
+
+    private bool ShouldTakeArmOffInstantlyForEp1Lvl2()
+    {
+        if (_level != LevelController.Level.EP01_LVL02_Casino_BossVaiken)
+        {
+            return false;
+        }
+        
+        if (_johnsonDiscoveredPsychogun)
+        {
+            return false;
+        }
+        
+        var position = character.transform.position;
+        if (position.x is > 133 and < 146 && position.y is > -2 and < 2)
+        {
+            return true;
+        }
+
+        return false;
     }
 }
