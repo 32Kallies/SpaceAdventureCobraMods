@@ -16,6 +16,8 @@ public class Plugin : BaseUnityPlugin
 
     internal static Texture2D NewTexture { get; private set; }
     internal static Texture2D NewSubsurfaceScatteringTexture { get; private set; }
+    internal static Texture2D SlidingRevolverTexture { get; private set; }
+    internal static Texture2D SlidingRevolverSSS { get; private set; }
 
     private void Awake()
     {
@@ -29,6 +31,8 @@ public class Plugin : BaseUnityPlugin
         var modFolder = Path.GetDirectoryName(assembly.Location);
         NewTexture = LoadTexture(Path.Combine(modFolder, "NewCobraTexture.png"), "NewCobraColorTexture");
         NewSubsurfaceScatteringTexture = LoadTexture(Path.Combine(modFolder, "NewCobraSSSTexture.png"), "NewCobraSSSTexture");
+        SlidingRevolverTexture = LoadTexture(Path.Combine(modFolder, "SlidingRevolverTexture.png"), "SlidingRevolverTexture");
+        SlidingRevolverSSS = LoadTexture(Path.Combine(modFolder, "SlidingRevolverSSS.png"), "SlidingRevolverSSS");
         
         // LOG COMPLETION!
         
