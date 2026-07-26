@@ -6,6 +6,7 @@ using System.IO;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using PscyhogunArmOverhaul;
+using UnityEngine.UIElements;
 
 [Serializable]
 public class RuntimeAdditiveAnimationData
@@ -66,6 +67,7 @@ public class RuntimeAdditiveAnimation : MonoBehaviour
     public AnimationClip clip;
     public float ClipLength;
     public float FrameRate = 60f;
+    public bool UseRealTime;
     
     [TextArea(5, 15)]
     [Tooltip("Paste bone names here, one per line.")]
@@ -175,11 +177,17 @@ public class RuntimeAdditiveAnimation : MonoBehaviour
         _isPlaying = false;
     }
 
+    private float GetDeltaTime()
+    {
+        if (UseRealTime) return Time.unscaledDeltaTime;
+        return Time.deltaTime;
+    }
+
     void LateUpdate()
     {
         if (!_isPlaying || AnimatedBones == null) return;
 
-        _playbackTime += Time.deltaTime * _speed;
+        _playbackTime += GetDeltaTime() * _speed;
         float totalTime = ClipLength;
         int totalFrames = Mathf.CeilToInt(totalTime * FrameRate);
 

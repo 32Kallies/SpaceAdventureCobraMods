@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using Rewired;
 using UnityEngine;
 using UnityEngine.Animations;
@@ -16,12 +15,8 @@ public class NewArmBehaviour : MonoBehaviour
     public RuntimeAdditiveAnimation additiveAnimation;
     public AudioSource armOffSound;
     
-    private const float DPadThreshold = 0.5f;
-
     private bool _puttingArmBackOn;
     private bool _takingArmOff;
-
-    private readonly Dictionary<Token.HardCodedTokens, bool> _tokens = new();
     
     private bool _prostheticOn;
     private bool _forceGrabArmModelEnabled;
@@ -34,7 +29,11 @@ public class NewArmBehaviour : MonoBehaviour
     private void Start()
     {
         Instance = this;
-        SetToken(Token.HardCodedTokens.ForcePsychogunOff, true);
+        // ensure that this only works on the first time in a stage (not upon switching characters)
+        if (PsychogunStateRememberer.GetInstance(true) == null)
+        {
+            PsychogunStateRememberer.GetInstance().SetToken(Token.HardCodedTokens.ForcePsychogunOff, true);
+        }
         _prostheticOn = true;
         _newFist = Instantiate(character.dependencies.unskinnedProthese);
         _newFist.SetActive(false);
@@ -76,7 +75,7 @@ public class NewArmBehaviour : MonoBehaviour
             return;
         }
 
-        if (_prostheticOn && TokenController.GetTokenValue(Token.HardCodedTokens.ForcePsychogunOff) <= 1)
+        if (CanTakeOffArm())
         {
             if (Input.GetKeyDown(Plugin.KeyboardBinding.Value) || GetRightStickClick())
             {
@@ -90,13 +89,23 @@ public class NewArmBehaviour : MonoBehaviour
                 }
             }
         }
-        else if (!_prostheticOn && TokenController.GetTokenValue(Token.HardCodedTokens.ForcePsychogunOn) <= 1)
+        else if (CanPutOnArm())
         {
             if (Input.GetKeyDown(Plugin.KeyboardBinding.Value) || GetRightStickClick())
             {
                 StartCoroutine(PutArmBackOn());
             }
         }
+    }
+
+    private bool CanTakeOffArm()
+    {
+        return _prostheticOn && TokenController.GetTokenValue(Token.HardCodedTokens.ForcePsychogunOff) <= 1;
+    }
+    
+    private bool CanPutOnArm()
+    {
+        return !_prostheticOn && TokenController.GetTokenValue(Token.HardCodedTokens.ForcePsychogunOn) <= 1;
     }
 
     private bool CanChangeArmState()
@@ -157,23 +166,32 @@ public class NewArmBehaviour : MonoBehaviour
             }
         }
     }
+
+    public void PutOnArmForDialogue()
+    {
+        if (CanChangeArmState() && CanPutOnArm())
+        {
+            StartCoroutine(PutArmBackOn(1));
+        }
+    }
     
-    private IEnumerator PutArmBackOn()
+    private IEnumerator PutArmBackOn(float speedMultiplier = 1f)
     {
         _puttingArmBackOn = true;
         
-        PlayAdditiveAnimation();
-        
-        yield return new WaitForSeconds(GetAnimationDuration(1) * 0.2f);
+        PlayAdditiveAnimation(speedMultiplier);
 
+        yield return new WaitForSeconds(GetAnimationDuration(speedMultiplier) * 0.2f);
+        
         _forceGrabArmModelEnabled = true;
         
-        yield return new WaitForSeconds(GetAnimationDuration(1) * 0.3f);
+        yield return new WaitForSeconds(GetAnimationDuration(speedMultiplier) * 0.3f);
 
         _forceGrabArmModelEnabled = false;
         // finish putting on
-        SetToken(Token.HardCodedTokens.ForcePsychogunOn, false);
-        SetToken(Token.HardCodedTokens.ForcePsychogunOff, true);
+        var state = PsychogunStateRememberer.GetInstance();
+        state.SetToken(Token.HardCodedTokens.ForcePsychogunOn, false);
+        state.SetToken(Token.HardCodedTokens.ForcePsychogunOff, true);
         character.ProtheseOn();
         
         _prostheticOn = true;
@@ -189,8 +207,9 @@ public class NewArmBehaviour : MonoBehaviour
         armOffSound.Play();
         _forceGrabArmModelEnabled = true;
         // finish taking off
-        SetToken(Token.HardCodedTokens.ForcePsychogunOn, true);
-        SetToken(Token.HardCodedTokens.ForcePsychogunOff, false);
+        var state = PsychogunStateRememberer.GetInstance();
+        state.SetToken(Token.HardCodedTokens.ForcePsychogunOn, true);
+        state.SetToken(Token.HardCodedTokens.ForcePsychogunOff, false);
         
         yield return new WaitForSeconds(GetAnimationDuration(speed) * 0.3f);
         _forceGrabArmModelEnabled = false;
@@ -205,8 +224,9 @@ public class NewArmBehaviour : MonoBehaviour
             return;
         
         Plugin.Logger.LogInfo("Taking arm off instantly");
-        SetToken(Token.HardCodedTokens.ForcePsychogunOn, true);
-        SetToken(Token.HardCodedTokens.ForcePsychogunOff, false);
+        var state = PsychogunStateRememberer.GetInstance();
+        state.SetToken(Token.HardCodedTokens.ForcePsychogunOn, true);
+        state.SetToken(Token.HardCodedTokens.ForcePsychogunOff, false);
         _forceGrabArmModelEnabled = false;
         _prostheticOn = false;
         _takingArmOff = false;
@@ -219,35 +239,6 @@ public class NewArmBehaviour : MonoBehaviour
             additiveAnimation.PlayInReverse(speed);
         else
             additiveAnimation.Play(speed);
-    }
-
-    private void OnDisable()
-    {
-        SetToken(Token.HardCodedTokens.ForcePsychogunOn, false);
-        SetToken(Token.HardCodedTokens.ForcePsychogunOff, false);
-        _takingArmOff = false;
-        _puttingArmBackOn = false;
-    }
-
-    private void OnDestroy()
-    {
-        SetToken(Token.HardCodedTokens.ForcePsychogunOn, false);
-        SetToken(Token.HardCodedTokens.ForcePsychogunOff, false);
-    }
-
-    private void SetToken(Token.HardCodedTokens token, bool active)
-    {
-        bool wasActive = _tokens.TryGetValue(token, out var storedTokenValue) && storedTokenValue;
-        if (wasActive && !active)
-        {
-            TokenController.SetTokenValue(token, 1, Token.ValueOperator.Minus);
-            _tokens[token] = false;
-        }
-        else if (!wasActive && active)
-        {
-            TokenController.SetTokenValue(token, 1, Token.ValueOperator.Add);
-            _tokens[token] = true;
-        }
     }
 
     private static bool GetRightStickClick()
