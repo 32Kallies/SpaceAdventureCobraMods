@@ -1,6 +1,5 @@
 ﻿using System;
 using HarmonyLib;
-using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace PscyhogunArmOverhaul;
@@ -23,12 +22,18 @@ public static class FixEpisode1Level2Patch
         foreach (GenericTrigger trigger in allTriggers)
         {
             if (trigger == null) continue;
-            if (!trigger.gameObject.name.Equals("NormalWalkTrigger", StringComparison.OrdinalIgnoreCase)) continue;
+            // if (!trigger.gameObject.name.Equals("NormalWalkTrigger", StringComparison.OrdinalIgnoreCase)) continue;
             int matches = 0;
             foreach (var parameter in trigger.listParameter)
             {
                 if (parameter.type == GenericTrigger.Type.TokenSetValueOperator &&
                     parameter.comment == "ForceProtheseOff")
+                {
+                    parameter.type = GenericTrigger.Type.None;
+                    matches++;
+                }
+                if (parameter.type == GenericTrigger.Type.TokenSetValueOperator &&
+                    parameter.comment == "ForceProtheseOn")
                 {
                     parameter.type = GenericTrigger.Type.None;
                     matches++;
