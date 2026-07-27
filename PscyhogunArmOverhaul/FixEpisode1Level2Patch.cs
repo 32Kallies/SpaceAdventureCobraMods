@@ -7,6 +7,8 @@ namespace PscyhogunArmOverhaul;
 [HarmonyPatch]
 public static class FixEpisode1Level2Patch
 {
+    private const string VideoNameToPutArmBackOn = "CS2D_V_1_2_3";
+
     [HarmonyPostfix]
     [HarmonyPatch(typeof(LevelController), nameof(LevelController.Start))]
     public static void PatchLevel(LevelController __instance)
@@ -42,6 +44,22 @@ public static class FixEpisode1Level2Patch
 
             Plugin.Logger.LogInfo(
                 $"Patched {matches} token sets on level 1-2 to disable the psychogun enablement trigger");
+        }
+    }
+    
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(CobraVideoPlayer), nameof(CobraVideoPlayer.Stop))]
+    private static void PutArmBackOnAfterSecondCutsceneOnEp1Lvl2(CobraVideoPlayer __instance)
+    {
+        if (!__instance.videoName.Equals(VideoNameToPutArmBackOn, StringComparison.OrdinalIgnoreCase))
+            return;
+        
+        Plugin.Logger.LogInfo("Forcing Cobra to put arm back on");
+        var state = PsychogunStateRememberer.GetInstance(true);
+        if (state != null)
+        {
+            state.SetToken(Token.HardCodedTokens.ForcePsychogunOff, true);
+            state.SetToken(Token.HardCodedTokens.ForcePsychogunOn, false);
         }
     }
 }
