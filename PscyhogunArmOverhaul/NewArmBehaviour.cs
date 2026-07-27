@@ -33,8 +33,13 @@ public class NewArmBehaviour : MonoBehaviour
         if (PsychogunStateRememberer.GetInstance(true) == null)
         {
             PsychogunStateRememberer.GetInstance().SetToken(Token.HardCodedTokens.ForcePsychogunOff, true);
+            _prostheticOn = true;
         }
-        _prostheticOn = true;
+        else
+        {
+            _prostheticOn = TokenController.GetTokenValue(Token.HardCodedTokens.ForcePsychogunOn) <= 0 &&
+                            TokenController.GetTokenValue(Token.HardCodedTokens.ForcePsychogunOff) >= 0;
+        }
         _newFist = Instantiate(character.dependencies.unskinnedProthese);
         _newFist.SetActive(false);
         Destroy(_newFist.GetComponent<ParentConstraint>());
