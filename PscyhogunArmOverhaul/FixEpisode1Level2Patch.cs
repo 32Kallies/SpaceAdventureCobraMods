@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using HarmonyLib;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace PscyhogunArmOverhaul;
@@ -42,8 +44,11 @@ public static class FixEpisode1Level2Patch
                 }
             }
 
-            Plugin.Logger.LogInfo(
-                $"Patched {matches} token sets on level 1-2 to disable the psychogun enablement trigger");
+            if (matches > 0)
+            {
+                Plugin.Logger.LogInfo(
+                    $"Patched {matches} token sets on level 1-2 to disable the psychogun enablement trigger");   
+            }
         }
     }
     
@@ -53,13 +58,20 @@ public static class FixEpisode1Level2Patch
     {
         if (!__instance.videoName.Equals(VideoNameToPutArmBackOn, StringComparison.OrdinalIgnoreCase))
             return;
-        
+
+        Plugin.StartCoroutineOnPlugin(PutArmBackOnAfterSecondCutsceneOnEp1Lvl2Coroutine());
+    }
+
+    private static IEnumerator PutArmBackOnAfterSecondCutsceneOnEp1Lvl2Coroutine()
+    {
         Plugin.Logger.LogInfo("Forcing Cobra to put arm back on");
-        var state = PsychogunStateRememberer.GetInstance(true);
-        if (state != null)
+        yield return new WaitForSeconds(1);
+        var armBehavior = NewArmBehaviour.Instance;
+        if (armBehavior == null)
         {
-            state.SetToken(Token.HardCodedTokens.ForcePsychogunOff, true);
-            state.SetToken(Token.HardCodedTokens.ForcePsychogunOn, false);
+            Plugin.Logger.LogError("Failed to find arm behavior");
+            yield break;
         }
+        armBehavior.PutOnArmForDialogue();
     }
 }
