@@ -1,0 +1,90 @@
+{
+   "pack_name": "1982 Anime Sounds Pack",
+   "enable": true,
+   "sound_replacements": [
+      {
+         "original_file_name": "snd_plr_psychogun_guided_shot_aim.wav",
+         "replacement_file_path": "Weapons/CobraAimSFXBB12T8Fade161.wav",
+         "volume": 1.0
+      },
+      {
+         "original_file_name": "snd_plr_prothesis_arm_back.wav",
+         "replacement_file_path": "Weapons/LeftArmOn2.wav",
+         "volume": 0.7
+      },
+      {
+         "original_file_name": "snd_plr_psychogun_guided_shot_impact_enemy_01.wav",
+         "replacement_file_path": "Weapons/PsychogunHitSFX(BB12)(T8)(V+10db).wav",
+         "volume": 2.0
+      },
+      {
+         "original_file_name": "snd_plr_psychogun_guided_shot_impact_enemy_02.wav",
+         "replacement_file_path": "Weapons/PsychogunHitSFX(BB12)(T8)(V+10db).wav",
+         "volume": 2.0
+      },
+      {
+         "original_file_name": "snd_plr_psychogun_charged_shot_destructible.wav",
+         "replacement_file_path": "Weapons/PsychogunShotSFX(BB22,9)(T8)(fade01,355).wav",
+         "volume": 5.0
+      },
+      {
+         "original_file_name": "snd_plr_psychogun_charged_shot_01.wav",
+         "replacement_file_path": "Weapons/PsychogunShotSFX(BB22,9)(T8)(fade01,355).wav",
+         "volume": 5.0
+      },
+      {
+         "original_file_name": "snd_plr_psychogun_guided_shot_slowmo.wav",
+         "replacement_file_path": "Weapons/PsychogunShotSFX4.wav",
+         "volume": 2.9
+      },
+      {
+         "original_file_name": "snd_plr_psychogun_guided_shot_shot.wav",
+         "replacement_file_path": "Weapons/PsychogunSpecialShotEnd1.wav",
+         "volume": 2.9
+      },
+      {
+         "original_file_name": "snd_plr_revolver_shot.wav",
+         "replacement_file_path": "Weapons/Python77Magnum2.wav",
+         "volume": 1.5
+      },
+      {
+         "original_file_name": "snd_plr_psychogun_superguided_shot_slowmo.wav",
+         "replacement_file_path": "SuperShot/OriginalSuperShotSound.wav",
+         "volume": 5.0
+      },
+      {
+         "original_file_name": "snd_plr_psychogun_superguided_shot_release.wav",
+         "replacement_file_path": "SuperShot/SuperShotEnd(V4db)(BB18)(T5).wav",
+         "volume": 5.0
+      },
+      {
+         "original_file_name": "snd_loop_plr_psychogun_fully_charged_charging.wav",
+         "replacement_file_path": "Weapons/OriginalCharge(full)(raw).wav",
+         "volume": 1.0
+      }
+   ],
+   "new_sounds": [
+      {
+         "clip_name": "1982_anime_NPC_shoot",
+         "file_path": "NPC/EnemyShot1(BB18T5V14db)(F1305).wav",
+         "volume": 1.0,
+         "volume_type": 3
+      },
+      {
+         "clip_name": "1982_anime_NPC_multi_shoot",
+         "file_path": "NPC/EnemyShot2(BB18T5V10db)(F1524).wav",
+         "volume": 1.0,
+         "volume_type": 3
+      }
+   ],
+   "eclips": [
+      {
+         "id": "1982_anime_NPC_shoot",
+         "sound_name": "1982_anime_NPC_shoot"
+      },
+      {
+         "id": "1982_anime_NPC_multi_shoot",
+         "sound_name": "1982_anime_NPC_multi_shoot"
+      }
+   ]
+}
