@@ -5,9 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7651b6d-d04b-4a0f-b984-153b70df4189" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../CobraVisualFixes/Patches.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../CobraVisualFixes/Patches.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../VisibleHolsteredRevolverOn1-1Cobra/FixRevolverWhenHolsteredPatch.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.NoRevolverHolster.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.NoRevolverHolster.dir/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NoRevolverHolster.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/NoRevolverHolster.csproj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,6 +52,8 @@
       <workItem from="1784924879503" duration="1078000" />
       <workItem from="1784930674094" duration="2543000" />
       <workItem from="1784933288052" duration="2777000" />
+      <workItem from="1785198492994" duration="496000" />
+      <workItem from="1785199169242" duration="13000" />
     </task>
     <servers />
   </component>
