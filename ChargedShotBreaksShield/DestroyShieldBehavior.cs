@@ -29,7 +29,11 @@ public class DestroyShieldBehavior : MonoBehaviour
         }
         else if (field != null && field.gameObject.name == "NmiField_FieldForceSpheric")
         {
-            Destroy(field.gameObject);
+            // don't apply to 'fake bosses' (e.g. drone bosses)
+            if (field.GetComponentInParent<FakeBoss>() == null)
+            {
+                Destroy(field.gameObject);
+            }
         }
 
         var advance = other.GetComponentInParent<NmiAdvance>();
