@@ -36,4 +36,6 @@
       <HintPath>..\CobraSoundReplacer\bin\Debug\netstandard2.1\CobraSoundReplacer.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <Import Project="./PostBuild.targets"/>
 </Project>
