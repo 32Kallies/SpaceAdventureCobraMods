@@ -61,6 +61,21 @@
          "original_file_name": "snd_loop_plr_psychogun_fully_charged_charging.wav",
          "replacement_file_path": "Weapons/OriginalCharge(full)(raw).wav",
          "volume": 1.0
+      },
+      {
+         "original_file_name": "snd_npc_crystal_boy_shot_01.wav",
+         "replacement_file_path": "CrystalBoy/Crystal Boy shot (BB15T5V10db)(Reverb).wav",
+         "volume": 10.0
+      },
+      {
+         "original_file_name": "snd_plr_crystal_boy_takedown_01.wav",
+         "replacement_file_path": "CrystalBoy/Crystal Boy death grip(BB18V12db)(F040).wav",
+         "volume": 2.0
+      },
+      {
+         "original_file_name": "snd_plr_crystal_boy_takedown_02.wav",
+         "replacement_file_path": "CrystalBoy/Crystal Boy death grip(BB18V12db)(F040).wav",
+         "volume": 2.0
       }
    ],
    "new_sounds": [
@@ -75,6 +90,48 @@
          "file_path": "NPC/EnemyShot2(BB18T5V10db)(F1524).wav",
          "volume": 1.0,
          "volume_type": 3
+      },
+      {
+         "clip_name": "1_2_stage_and_2_1_normal_shot",
+         "file_path": "NPC/1-2 stage & 2-1 stage enemy shots (BB18T5V10db)(F0137).wav",
+         "volume": 3.0,
+         "volume_type": 3
+      },
+      {
+         "clip_name": "1_2_stage_and_2_1_spread_shot",
+         "file_path": "NPC/1-2 stage & 2-1 stage enemy spread shots (BB18T5V8db)(F060).wav",
+         "volume": 3.0,
+         "volume_type": 3
+      },
+      {
+         "clip_name": "brainwashed_female_shot",
+         "file_path": "NPC/Female enemy shot(BB18T14V10db)(F098).wav",
+         "volume": 3.0,
+         "volume_type": 3
+      },
+      {
+         "clip_name": "crystal_boy_footstep",
+         "file_path": "CrystalBoy/Crystal Boy step 2x speed.wav",
+         "volume": 1.0,
+         "volume_type": 3
+      },
+      {
+         "clip_name": "crystal_boy_psychogun_passthrough",
+         "file_path": "CrystalBoy/Crystal Boy psycho-gun passthrough.wav",
+         "volume": 1.0,
+         "volume_type": 3
+      },
+      {
+         "clip_name": "snow_gorilla_shot",
+         "file_path": "NPC/Snow Gorilla shot(BB18T5V10db)(F078).wav",
+         "volume": 1.0,
+         "volume_type": 3
+      },
+      {
+         "clip_name": "jane_sniper_shot",
+         "file_path": "Jane/Jane sniper shot(BB18T5V10db)(F221).wav",
+         "volume": 1.0,
+         "volume_type": 3
       }
    ],
    "eclips": [
@@ -85,6 +142,34 @@
       {
          "id": "1982_anime_NPC_multi_shoot",
          "sound_name": "1982_anime_NPC_multi_shoot"
+      },
+      {
+         "id": "1_2_stage_and_2_1_normal_shot",
+         "sound_name": "1_2_stage_and_2_1_normal_shot"
+      },
+      {
+         "id": "1_2_stage_and_2_1_spread_shot",
+         "sound_name": "1_2_stage_and_2_1_spread_shot"
+      },
+      {
+         "id": "brainwashed_female_shot",
+         "sound_name": "brainwashed_female_shot"
+      },
+      {
+         "id": "crystal_boy_footstep",
+         "sound_name": "crystal_boy_footstep"
+      },
+      {
+         "id": "snow_gorilla_shot",
+         "sound_name": "snow_gorilla_shot"
+      },
+      {
+         "id": "crystal_boy_psychogun_passthrough",
+         "sound_name": "crystal_boy_psychogun_passthrough"
+      },
+      {
+         "id": "jane_sniper_shot",
+         "sound_name": "jane_sniper_shot"
       }
    ]
 }
