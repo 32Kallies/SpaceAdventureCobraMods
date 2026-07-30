@@ -11,8 +11,12 @@ public sealed class SoundReplacementData
             // RIFLE SOUNDS
             {
                 audioSelectionData.eCLIP.NMI_SHOOT_RIFLE, new SoundClipReplacements([
-                    new PrefixReplacement("NmiCrystalBoy_Light_ShotBasic", "1982_anime_NPC_shoot"),
+                    new PrefixReplacement("NmiCrystalBoy_Light", "1982_anime_NPC_shoot"),
+                    new PrefixReplacement("NmiCrystalBoy_Elite", "1982_anime_NPC_shoot"),
                     new PrefixReplacement("NmiZigoba_Light", "1_2_stage_and_2_1_normal_shot"),
+                    new PrefixReplacement("NmiZigoba_Elite", "1_2_stage_and_2_1_normal_shot"),
+                    new PrefixReplacement("NmiThug_Light", "1_2_stage_and_2_1_normal_shot"),
+                    new PrefixReplacement("NmiThug_Elite", "1_2_stage_and_2_1_normal_shot"),
                     new PrefixReplacement("NmiMindSlave_Light", "brainwashed_female_shot"),
                     new PrefixReplacement("NmiMindSlave_Elite", "brainwashed_female_shot"),
                     new PrefixReplacement("NmiSnowGuerillas_Elite", "snow_gorilla_shot"),
@@ -22,8 +26,12 @@ public sealed class SoundReplacementData
             // SHOTGUN SOUNDS
             {
                 audioSelectionData.eCLIP.NMI_SHOOT_MULTI, new SoundClipReplacements([
-                    new PrefixReplacement("NmiCrystalBoy_Elite_ShotSpread", "1982_anime_NPC_multi_shoot"),
+                    new PrefixReplacement("NmiCrystalBoy_Light", "1982_anime_NPC_multi_shoot"),
+                    new PrefixReplacement("NmiCrystalBoy_Elite", "1982_anime_NPC_multi_shoot"),
+                    new PrefixReplacement("NmiZigoba_Light", "1_2_stage_and_2_1_spread_shot"),
                     new PrefixReplacement("NmiZigoba_Elite", "1_2_stage_and_2_1_spread_shot"),
+                    new PrefixReplacement("NmiThug_Light", "1_2_stage_and_2_1_spread_shot"),
+                    new PrefixReplacement("NmiThug_Elite", "1_2_stage_and_2_1_spread_shot"),
                     new PrefixReplacement("NmiMindSlave_Elite", "brainwashed_female_shot"),
                     new PrefixReplacement("NmiSnowGuerillas_Elite", "snow_gorilla_shot"),
                     new PrefixReplacement("NmiSnowGuerillas_Light", "snow_gorilla_shot"),
