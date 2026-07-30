@@ -7,6 +7,8 @@ public class CrystalBoyPassThroughSoundPlayer : MonoBehaviour
     public float radius = 0.7f;
     public audioSelectionData.eCLIP clip;
     private bool _hit;
+
+    private static ushort _volumeMultiplier = 2;
     
     private static readonly Collider[] SharedBuffer = new Collider[16];
     
@@ -21,13 +23,19 @@ public class CrystalBoyPassThroughSoundPlayer : MonoBehaviour
                 continue;
             var boy = SharedBuffer[i].GetComponentInParent<NmiCrystalBowie>();
             if (boy != null)
+            {
                 OnHitCrystalBoy();
+                return;
+            }
         }
     }
 
     private void OnHitCrystalBoy()
     {
         _hit = true;
-        AudioController.Instance.PlaySound(clip);
+        for (ushort i = 0; i < _volumeMultiplier; i++)
+        {
+            AudioController.Instance.PlaySound(clip);
+        }
     }
 }
