@@ -98,6 +98,12 @@
          "volume_type": 3
       },
       {
+         "clip_name": "sniper_shot_sound",
+         "file_path": "NPC/1-2 stage & 2-1 stage enemy shots (BB18T5V10db)(F0137).wav",
+         "volume": 1.0,
+         "volume_type": 3
+      },
+      {
          "clip_name": "1_2_stage_and_2_1_spread_shot",
          "file_path": "NPC/1-2 stage & 2-1 stage enemy spread shots (BB18T5V8db)(F060).wav",
          "volume": 3.0,
@@ -146,6 +152,10 @@
       {
          "id": "1_2_stage_and_2_1_normal_shot",
          "sound_name": "1_2_stage_and_2_1_normal_shot"
+      },
+      {
+         "id": "sniper_shot_sound",
+         "sound_name": "sniper_shot_sound"
       },
       {
          "id": "1_2_stage_and_2_1_spread_shot",
