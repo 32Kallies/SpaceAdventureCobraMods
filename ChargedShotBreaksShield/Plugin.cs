@@ -25,7 +25,7 @@ public class Plugin : BaseUnityPlugin
         var assembly = Assembly.GetExecutingAssembly();
         Harmony.CreateAndPatchAll(assembly);
         
-        PenetratingShotDecibelGain = Config.Bind("General", "Penetrating Shot Decibel Gain", 3f);
+        PenetratingShotDecibelGain = Config.Bind("General", "Penetrating Shot Decibel Gain", 4f);
         
         try
         {
