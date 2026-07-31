@@ -94,19 +94,19 @@
       {
          "clip_name": "1_2_stage_and_2_1_normal_shot",
          "file_path": "NPC/1-2 stage & 2-1 stage enemy shots (BB18T5V10db)(F0137).wav",
-         "volume": 3.0,
+         "volume": 3.5,
          "volume_type": 3
       },
       {
          "clip_name": "sniper_shot_sound",
          "file_path": "NPC/1-2 stage & 2-1 stage enemy shots (BB18T5V10db)(F0137).wav",
-         "volume": 1.0,
+         "volume": 0.5,
          "volume_type": 3
       },
       {
          "clip_name": "1_2_stage_and_2_1_spread_shot",
          "file_path": "NPC/1-2 stage & 2-1 stage enemy spread shots (BB18T5V8db)(F060).wav",
-         "volume": 3.0,
+         "volume": 3.5,
          "volume_type": 3
       },
       {
@@ -130,13 +130,13 @@
       {
          "clip_name": "snow_gorilla_shot",
          "file_path": "NPC/Snow Gorilla shot(BB18T5V10db)(F078).wav",
-         "volume": 1.0,
+         "volume": 1.5,
          "volume_type": 3
       },
       {
          "clip_name": "jane_sniper_shot",
          "file_path": "Jane/Jane sniper shot(BB18T5V10db)(F221).wav",
-         "volume": 1.0,
+         "volume": 0.5,
          "volume_type": 3
       }
    ],

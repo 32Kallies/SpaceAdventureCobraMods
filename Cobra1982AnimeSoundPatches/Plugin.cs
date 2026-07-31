@@ -32,9 +32,9 @@ public class Plugin : BaseUnityPlugin
         var assembly = Assembly.GetExecutingAssembly();
         Harmony.CreateAndPatchAll(assembly);
         
-        PyschogunShotDecibelGain = Config.Bind("General", "Psychogun shot decibel gain", 1.5f);
+        PyschogunShotDecibelGain = Config.Bind("General", "Psychogun shot decibel gain", 1f);
         SuperShotDecibelGain = Config.Bind("General", "Super shot decibel gain", 0f);
-        ChargeSoundDecibelGain = Config.Bind("General", "Psychogun charge decibel gain", 7f);
+        ChargeSoundDecibelGain = Config.Bind("General", "Psychogun charge decibel gain", 5f);
         DisableChargeSoundLoop = Config.Bind("General", "Disable charge sound loop", true);
         
         try
