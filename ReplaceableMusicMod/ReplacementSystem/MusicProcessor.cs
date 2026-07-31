@@ -76,7 +76,7 @@ public static class MusicProcessor
                 continue;
             }
 
-            if (!_musicSoundsByLoadName.TryGetValue(soundName, out var data))
+            if (!_musicSoundsByLoadName.TryGetValue(soundName, out MusicSound data))
             {
                 Plugin.Logger.LogWarning("Failed to find sound: " + soundName);
                 continue;
