@@ -9,6 +9,7 @@ public class GameOverScreen : MonoBehaviour
 
     public float buttonMoveDelay = 1f;
     public float buttonPressDelay = 1.01f;
+    public bool playSound = true;
     
     public NUIButton restartStageButton;
     public NUIButton restartCheckpointButton;
@@ -38,7 +39,9 @@ public class GameOverScreen : MonoBehaviour
 
     private void Start()
     {
-        PlayMusic();
+        if (playSound)
+            PlayMusic();
+        
         InitializeButtons(HardcoreStateMemorizer.GetIsHardcore());
     }
 

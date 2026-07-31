@@ -1,4 +1,5 @@
 using System;
+using GameOverScreen.Patches;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -31,6 +32,18 @@ public static class GameOverScreenBuilder
         gameOverScreen.exitToMenuButton = AddButton(buttonsParent, "EXIT TO MENU", GameOverScreenActions.QuitToMainMenu);
 
         canvas.AddComponent<GameOverScreenMute>();
+        
+        bool useCrystalBoyDeathSound = UseCrystalBoyDeathSoundInstead();
+        if (useCrystalBoyDeathSound)
+        {
+            gameOverScreen.playSound = false;
+        }
+    }
+
+    private static bool UseCrystalBoyDeathSoundInstead()
+    {
+        if (!Plugin.AuthenticSoundPatchesModInstalled) return false;
+        return CobraDeathToCrystalBoyPatches.WasCobraJustKilledByCrystalBoy();
     }
 
     private static NUIButton AddButton(RectTransform parent, string text, Action action)

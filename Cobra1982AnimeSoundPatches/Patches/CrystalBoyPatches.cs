@@ -139,3 +139,35 @@ public static class NmiCrystalBoyShootSoundTranspiler
         }
     }
 }
+
+[HarmonyPatch]
+public static class PlayNewCrystalBoyTakedownPatch
+{
+    private const string NewTakedownSound = "new_crystal_boy_takedown";
+    
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(NmiCrystalBowie), nameof(NmiCrystalBowie.KillCobraIfNear))]
+    private static void PatchNormalCrystalBoy(ref bool __result)
+    {
+        if (__result) PlayNewCrystalBoyKillSound();
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(NmiCrystalBowieClone), nameof(NmiCrystalBowieClone.KillCobraIfNear))]
+    private static void PatchCloneCrystalBoy(ref bool __result)
+    {
+        if (__result) PlayNewCrystalBoyKillSound();
+    }
+
+    private static void PlayNewCrystalBoyKillSound()
+    {
+        if (CobraSoundReplacer.API.CustomSoundUtils.TryGetEClip(NewTakedownSound, out var clip))
+        {
+            AudioController.Instance.PlayEnemySound(clip);
+        }
+        else
+        {
+            Plugin.Logger.LogError("Crystal Boy takedown sound clip not found");
+        }
+    }
+}

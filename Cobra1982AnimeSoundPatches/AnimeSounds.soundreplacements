@@ -69,13 +69,13 @@
       },
       {
          "original_file_name": "snd_plr_crystal_boy_takedown_01.wav",
-         "replacement_file_path": "CrystalBoy/Crystal Boy death grip(BB18V12db)(F040).wav",
-         "volume": 2.0
+         "replacement_file_path": "Misc/Silence.wav",
+         "volume": 0.0
       },
       {
          "original_file_name": "snd_plr_crystal_boy_takedown_02.wav",
-         "replacement_file_path": "CrystalBoy/Crystal Boy death grip(BB18V12db)(F040).wav",
-         "volume": 2.0
+         "replacement_file_path": "Misc/Silence.wav",
+         "volume": 0.0
       }
    ],
    "new_sounds": [
@@ -138,6 +138,12 @@
          "file_path": "Jane/Jane sniper shot(BB18T5V10db)(F221).wav",
          "volume": 0.5,
          "volume_type": 3
+      },
+      {
+         "clip_name": "new_crystal_boy_takedown",
+         "file_path": "CrystalBoy/Crystal Boy death grip(BB18V12db)(F040).wav",
+         "volume": 2.0,
+         "volume_type": 6
       }
    ],
    "eclips": [
@@ -180,6 +186,10 @@
       {
          "id": "jane_sniper_shot",
          "sound_name": "jane_sniper_shot"
+      },
+      {
+         "id": "new_crystal_boy_takedown",
+         "sound_name": "new_crystal_boy_takedown"
       }
    ]
 }
