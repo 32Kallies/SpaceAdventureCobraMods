@@ -5,10 +5,22 @@ namespace DisableBootupScreenMusic;
 [HarmonyPatch]
 public static class DisableTitleControllerMusicPatch
 {
-    [HarmonyPostfix]
+    // skips the PlayMusic call
+    [HarmonyPrefix]
     [HarmonyPatch(typeof(UITitleController), nameof(UITitleController.Start))]
-    private static void UITitleControllerStartPostfix(UITitleController __instance)
+    private static bool ReplaceUITitleControllerStart(UITitleController __instance)
     {
-        __instance.gameObject.AddComponent<TitleScreenMusicDisabler>().StopMusic();
+        LoadSaveController.Instance.ResetGameData();
+        LoadSaveController.Instance.ResetPreferencesData();
+        if (PlatformController.Instance.Platform.IsSignInRequired())
+        {
+            __instance.m_Status = UITitleController.STATUS.HANDLESIGNIN;
+        }
+        else
+        {
+            __instance.m_Status = UITitleController.STATUS.WAITFORANYBUTTONPRESSED;
+        }
+        __instance.actionText.TextID = __instance.statusTextsId[(int)__instance.m_Status];
+        return false; // skip original method
     }
 }
