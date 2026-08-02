@@ -76,6 +76,11 @@
          "original_file_name": "snd_plr_crystal_boy_takedown_02.wav",
          "replacement_file_path": "Misc/Silence.wav",
          "volume": 0.0
+      },
+      {
+         "original_file_name": "snd_jingle_levelpresentation.wav",
+         "replacement_file_path": "UI/MissionIntroduction(BB8T15).wav",
+         "volume": 1.0
       }
    ],
    "new_sounds": [
@@ -144,6 +149,18 @@
          "file_path": "CrystalBoy/Crystal Boy death grip(BB18V12db)(F040).wav",
          "volume": 2.0,
          "volume_type": 6
+      },
+      {
+         "clip_name": "mission_completion_s_plus",
+         "file_path": "UI/S+rankObtained(BB18T5V9db).wav",
+         "volume": 3.0,
+         "volume_type": 6
+      },
+      {
+         "clip_name": "mission_completion_normal",
+         "file_path": "UI/MissionClear(8dbBassBoost).wav",
+         "volume": 1.5,
+         "volume_type": 6
       }
    ],
    "eclips": [
@@ -190,6 +207,14 @@
       {
          "id": "new_crystal_boy_takedown",
          "sound_name": "new_crystal_boy_takedown"
+      },
+      {
+         "id": "mission_completion_normal",
+         "sound_name": "mission_completion_normal"
+      },
+      {
+         "id": "mission_completion_s_plus",
+         "sound_name": "mission_completion_s_plus"
       }
    ]
 }
