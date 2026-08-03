@@ -7,7 +7,7 @@ using JetBrains.Annotations;
 namespace Cobra1982AnimeSoundPatches.Patches;
 
 [HarmonyPatch(typeof(NUIScorePanel))]
-[HarmonyPatch(nameof(NUIScorePanel.Start))]
+[HarmonyPatch(nameof(NUIScorePanel.OnEnable))]
 public static class MissionCompletionPatches
 {
     // Play a custom sound on top of the previous muted sound
@@ -48,12 +48,16 @@ public static class MissionCompletionPatches
                     continue;
                 }
                 
-                // check if looking at the JINGLE_RESULTSCREEN sound
-                foundVolume = instruction.opcode == OpCodes.Ldc_I4 &&
-                              (int)instruction.operand == (int)audioSelectionData.eCLIP.JINGLE_RESULTSCREEN;
+                // check if looking at the JINGLE_RESULTSCREEN sound (audioSelectionData.eCLIP.JINGLE_RESULTSCREEN)
+                foundVolume = instruction.opcode == OpCodes.Ldc_I4_S && (sbyte)instruction.operand == 66;
             }
             
             yield return instruction;
+        }
+
+        if (!replacedVolume)
+        {
+            Plugin.Logger.LogError("Failed to mute results screen sound through transpiler");
         }
     }
 }
