@@ -111,6 +111,9 @@ public static class Patches
                 material.SetFloat("_Vector1_directLight", 0);
                 material.SetFloat("_use_vertex_color", 0);
                 material.SetFloat("_QueueControl", 0);
+                // darken revolver and subsurface scattering
+                material.SetColor("_Color_alb", new Color(0.7f, 0.6f, 0.65f));
+                material.SetColor("_Color_sss", new Color(0.6f, 0.7f, 0.6f));
                 
                 found = true;
             }
