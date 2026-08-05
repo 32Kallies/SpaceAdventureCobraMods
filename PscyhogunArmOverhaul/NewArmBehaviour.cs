@@ -80,6 +80,11 @@ public class NewArmBehaviour : MonoBehaviour
             return;
         }
 
+        if (CutscenePlayer.IsPlaying)
+        {
+            return;
+        }
+
         if (CanTakeOffArm())
         {
             if (Input.GetKeyDown(Plugin.KeyboardBinding.Value) || GetRightStickClick())
