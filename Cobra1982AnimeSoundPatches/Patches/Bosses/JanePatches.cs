@@ -3,7 +3,7 @@ using System.Reflection.Emit;
 using HarmonyLib;
 using JetBrains.Annotations;
 
-namespace Cobra1982AnimeSoundPatches.Patches;
+namespace Cobra1982AnimeSoundPatches.Patches.Bosses;
 
 [HarmonyPatch(typeof(NmiBossJane))]
 [HarmonyPatch(nameof(NmiBossJane.shootManage))]

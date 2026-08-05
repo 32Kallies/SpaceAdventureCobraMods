@@ -81,11 +81,6 @@
          "original_file_name": "snd_jingle_levelpresentation.wav",
          "replacement_file_path": "UI/MissionIntroduction(BB8T15).wav",
          "volume": 1.0
-      },
-      {
-         "original_file_name": "snd_npc_laser_shot_projectile.wav",
-         "replacement_file_path": "NPC/DroneShot(BB18T5V12db)(F009).wav",
-         "volume": 2.0
       }
    ],
    "new_sounds": [
@@ -172,6 +167,12 @@
          "file_path": "NPC/SquareFlyShot(BB18T5V6db)(F011).wav",
          "volume": 2.0,
          "volume_type": 3
+      },
+      {
+         "clip_name": "new_drone_shot_sound",
+         "file_path": "NPC/DroneShot(BB18T5V12db)(F009).wav",
+         "volume": 2.0,
+         "volume_type": 3
       }
    ],
    "eclips": [
@@ -230,6 +231,10 @@
       {
          "id": "square_vehicle_shot",
          "sound_name": "square_vehicle_shot"
+      },
+      {
+         "id": "new_drone_shot_sound",
+         "sound_name": "new_drone_shot_sound"
       }
    ]
 }

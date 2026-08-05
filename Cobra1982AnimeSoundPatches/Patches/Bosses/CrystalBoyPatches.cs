@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
-namespace Cobra1982AnimeSoundPatches.Patches;
+namespace Cobra1982AnimeSoundPatches.Patches.Bosses;
 
 [HarmonyPatch]
 public static class CrystalBoyPatches

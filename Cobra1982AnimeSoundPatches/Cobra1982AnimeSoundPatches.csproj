@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Product>Cobra1982AnimeSoundPatches</Product>
-    <Version>1.7.0</Version>
+    <Version>1.7.2</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <RestoreAdditionalProjectSources>
@@ -15,6 +15,7 @@
     <BepInExPluginName>1982 Anime Sound Patches</BepInExPluginName>
     <BepInExPluginGuid>com.lee23.cobra1982animesoundpatches</BepInExPluginGuid>
     <PackageId>Cobra1982AnimeSoundPatches</PackageId>
+    <LangVersion>14</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +23,7 @@
     <PackageReference Include="BepInEx.Core" Version="5.*" />
     <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
     <PackageReference Include="UnityEngine.Modules" Version="2022.3.60" IncludeAssets="compile" />
+    <PackageReference Include="PolySharp" Version="1.16.0"/>
   </ItemGroup>
   
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">

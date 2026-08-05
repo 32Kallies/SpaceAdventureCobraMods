@@ -2,7 +2,7 @@
 using HarmonyLib;
 using UnityEngine;
 
-namespace Cobra1982AnimeSoundPatches.Patches;
+namespace Cobra1982AnimeSoundPatches.Patches.Bosses;
 
 [HarmonyPatch]
 public static class PsychogunCrystalBoyPassthroughPatch
