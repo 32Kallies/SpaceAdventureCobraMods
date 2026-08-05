@@ -39,7 +39,13 @@ public static class ChangeJaneShotVfxForSniping
             main.startColor = color;
             if (ps.gameObject.name.Equals("Fire ShockWave", StringComparison.OrdinalIgnoreCase))
             {
-                ps.GetComponent<Renderer>().material.SetColor("_Brillant_core_color", color);
+                // ps.GetComponent<Renderer>().material.SetColor("_Brillant_core_color", color);
+                ps.GetComponent<Renderer>().enabled = false;
+            }
+
+            if (ps.gameObject.name.Equals("Air ShockWave", StringComparison.OrdinalIgnoreCase))
+            {
+                ps.GetComponent<Renderer>().enabled = false;
             }
         }
     }
@@ -74,6 +80,8 @@ public static class ChangeJaneShotVfxForBossFight
             main.startColor = new Color(3, 0.4f, 3);
         }
 
+        superShot.GetComponent<MeshRenderer>().enabled = false; // remove 'ball'
+        superShotParticles.Find("missileShockwaveContinuous").gameObject.SetActive(false);
         superShotParticles.Find("missileShockwaveContinuous_03").gameObject.SetActive(false);
         superShotParticles.Find("vfx_Electricity_RedWarning").gameObject.SetActive(false);
         var dogWheelMain = superShot.transform.Find("vfx_Jane_MuzzleFlash/vfx_DogWheel_TurnSmoke")
