@@ -13,16 +13,25 @@ public static class Patches
     [HarmonyPatch(typeof(FrameRateLimiter), nameof(FrameRateLimiter.Start))]
     public static void OverrideFramerateCapPatch(FrameRateLimiter __instance)
     {
-        __instance.targetFrameRate = CustomFramerateUtils.GetNewFramerateInt();
+        int framerate = CustomFramerateUtils.GetNewFramerateInt();
+        __instance.targetFrameRate = framerate;
+        UpdateFixedDeltaTime(framerate);
     }
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(QualityController), nameof(QualityController.Update))]
     public static void OverrideFrameRateCapInUpdate()
     {
-        Application.targetFrameRate = CustomFramerateUtils.GetNewFramerateInt();
+        int framerate = CustomFramerateUtils.GetNewFramerateInt();
+        Application.targetFrameRate = framerate;
         if (Plugin.DisableVsync.Value)
             QualitySettings.vSyncCount = 0;
+        UpdateFixedDeltaTime(framerate);
+    }
+
+    private static void UpdateFixedDeltaTime(float targetFrameRate)
+    {
+        Time.fixedDeltaTime = 1f / Mathf.Clamp(targetFrameRate, 60, 240);
     }
 
     [HarmonyPostfix]
@@ -84,7 +93,25 @@ public static class NmiPatrouilleTimeDependencePatch
 {
     static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
-        return TranspilerUtils.ReplaceSixty(instructions);
+        return TranspilerUtils.ReplaceSixty("Nmi patrouille update", instructions);
+    }
+}
+
+[HarmonyPatch(typeof(CobraCharacter), nameof(CobraCharacter.SpeedUpdate))]
+public static class CobraCharacterSpeedUpdatePatch
+{
+    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    {
+        return TranspilerUtils.ReplaceSixty("Cobra speed update", instructions);
+    }
+}
+
+[HarmonyPatch(typeof(CobraCharacter), nameof(CobraCharacter.HandleGravity))]
+public static class CobraCharacterHandleGravityPatch
+{
+    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    {
+        return TranspilerUtils.ReplaceSixty("Cobra handle gravity", instructions);
     }
 }
 
@@ -111,24 +138,39 @@ public static class RocketProjectilePatch
 
 public static class TranspilerUtils
 {
-    public static IEnumerable<CodeInstruction> ReplaceSixty(IEnumerable<CodeInstruction> instructions)
+    public static IEnumerable<CodeInstruction> ReplaceSixty(string name, IEnumerable<CodeInstruction> instructions)
     {
+        bool found = false;
         foreach (var code in instructions)
         {
-            if (code.opcode == OpCodes.Ldc_R4 && code.operand is float operandFloat && Mathf.Approximately(operandFloat, 60f))
+            if (code.opcode == OpCodes.Ldc_R4 && code.operand is float operandFloat &&
+                (Mathf.Approximately(operandFloat, 60f) || Mathf.Approximately(operandFloat, 0.016666668f)))
             {
                 code.operand = CustomFramerateUtils.GetNewFramerateFloat();
+                found = true;
                 yield return code;
             }
-            else if ((code.opcode == OpCodes.Ldc_I4 || code.opcode == OpCodes.Ldc_I4_S) && code.operand is int operandInt && operandInt == 60)
+            else if (code.opcode == OpCodes.Ldc_I4 && code.operand is int operandInt && operandInt == 60)
             {
                 code.operand = CustomFramerateUtils.GetNewFramerateInt();
+                found = true;
+                yield return code;
+            }
+            else if (code.opcode == OpCodes.Ldc_I4_S && code.operand is sbyte operandByte && operandByte == 60)
+            {
+                code.operand = CustomFramerateUtils.GetNewFramerateInt();
+                found = true;
                 yield return code;
             }
             else
             {
                 yield return code;
             }
+        }
+
+        if (!found)
+        {
+            Plugin.Logger.LogError("Failed to locate any instance of 60 or 1/60 in transpiler: " + name);
         }
     }
 }

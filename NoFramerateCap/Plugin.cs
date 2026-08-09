@@ -19,21 +19,21 @@ public class Plugin : BaseUnityPlugin
         FrameRate = Config.Bind(
             "General",
             "NewFrameRate",
-            -1,
-            "The new target framerate for the game. A value of -1 means there is no limit. Restart required."
+            90,
+            "The new target framerate for the game."
         );
         
         DisableVsync = Config.Bind(
             "General",
             "DisableVsync",
-            true,
+            false,
             "If true, vsync will be disabled."
         );
         
-        Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
-
         // Plugin startup logic
         Logger = base.Logger;
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
+        
+        Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
     }
 }
