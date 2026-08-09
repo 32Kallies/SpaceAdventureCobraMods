@@ -173,6 +173,18 @@
          "file_path": "NPC/DroneShot(BB18T5V12db)(F009).wav",
          "volume": 2.0,
          "volume_type": 3
+      },
+      {
+         "clip_name": "custom_psychogun_sound_for_cutscenes",
+         "file_path": "Weapons/PsychogunShotSFX(BB22,9)(T8)(fade01,355).wav",
+         "volume": 1.5,
+         "volume_type": 3
+      },
+      {
+         "clip_name": "silence_for_cutscenes",
+         "file_path": "Misc/Silence.wav",
+         "volume": 0.0,
+         "volume_type": 3
       }
    ],
    "eclips": [
@@ -235,6 +247,15 @@
       {
          "id": "new_drone_shot_sound",
          "sound_name": "new_drone_shot_sound"
+      },
+      {
+         "id": "custom_psychogun_sound_for_cutscenes",
+         "sound_name": "custom_psychogun_sound_for_cutscenes"
+      },
+      {
+         "id": "silence_for_cutscenes",
+         "sound_name": "silence_for_cutscenes"
       }
+
    ]
 }
