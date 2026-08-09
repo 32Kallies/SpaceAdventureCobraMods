@@ -127,7 +127,7 @@ public static class SoundPackRegistry
                 loadname = newSound.Key,
                 type = (CAudio.eVolumeType)data.VolumeType,
                 loop = data.Looping,
-                hashName = newSound.Key.GetHashCode()
+                hashName = newSound.Key.GetHashCode(StringComparison.OrdinalIgnoreCase)
             };
             i++;
         }
