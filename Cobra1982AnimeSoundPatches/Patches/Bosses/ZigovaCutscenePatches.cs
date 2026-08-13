@@ -9,7 +9,7 @@ using UnityEngine.Timeline;
 namespace Cobra1982AnimeSoundPatches.Patches.Bosses;
 
 [HarmonyPatch]
-public static class ZigobaPatches
+public static class ZigovaCutscenePatches
 {
     private const string PsychogunCutsceneSound = "custom_psychogun_sound_for_cutscenes";
     
