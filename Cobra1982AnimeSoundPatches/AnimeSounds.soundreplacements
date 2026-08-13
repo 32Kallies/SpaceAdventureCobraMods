@@ -185,6 +185,12 @@
          "file_path": "Misc/Silence.wav",
          "volume": 0.0,
          "volume_type": 3
+      },
+      {
+         "clip_name": "turtle_elevator_and_reveal",
+         "file_path": "Level/3-1/TurtleElevatorAndReveal.wav",
+         "volume": 1.0,
+         "volume_type": 3
       }
    ],
    "eclips": [
@@ -255,7 +261,10 @@
       {
          "id": "silence_for_cutscenes",
          "sound_name": "silence_for_cutscenes"
+      },
+      {
+         "id": "turtle_elevator_and_reveal",
+         "sound_name": "turtle_elevator_and_reveal"
       }
-
    ]
 }
