@@ -34,34 +34,40 @@ public static class FixPsychogunInCutscenesPatch
         if (string.Equals(assetName, "timeline_C2_3_2_Zig_Intro_sequence_V2", StringComparison.OrdinalIgnoreCase))
         {
             Transform projectileParent = director.transform.Find("GRP_VFX/PsychogunProjectile");
-            CobraCharacter cobra = CobraCharacter.Instance;
-
-            HideAllInChildren(projectileParent.gameObject);
-
-            var chargedShot = Object.Instantiate(cobra.dependencies.chargedShot, projectileParent);
-            chargedShot.GetComponent<Projectile>().enabled = false;
-            chargedShot.GetComponent<Rigidbody>().isKinematic = true;
-            chargedShot.transform.localPosition = Vector3.zero;
-            chargedShot.transform.localEulerAngles = Vector3.zero;
-            chargedShot.transform.localScale = Vector3.zero;
-
-            var mainVfx = chargedShot.transform.Find("vfx_charge_trail_00");
-            if (mainVfx)
-                Object.DestroyImmediate(mainVfx.GetComponent<AutoMoveToParticle>());
-            else
-                Plugin.Logger.LogError("Could not locate 'vfx_charge_trail_00' child of charged Psychogun shot");
-
-            foreach (ParticleSystem ps in chargedShot.GetComponentsInChildren<ParticleSystem>(true))
-            {
-                var main = ps.main;
-                main.stopAction = ParticleSystemStopAction.None;
-            }
             
-            chargedShot.GetComponent<Renderer>().enabled = false;
-            chargedShot.transform.Find("trail").gameObject.SetActive(false);
+            ReplacePsychogunVfxWithChargedShot(projectileParent);
             
             Plugin.Logger.LogInfo("Patched psychogun for 2-3 Zigoba cutscene");
         }
+    }
+
+    private static void ReplacePsychogunVfxWithChargedShot(Transform projectileParent)
+    {
+        CobraCharacter cobra = CobraCharacter.Instance;
+
+        HideAllInChildren(projectileParent.gameObject);
+
+        var chargedShot = Object.Instantiate(cobra.dependencies.chargedShot, projectileParent);
+        chargedShot.GetComponent<Projectile>().enabled = false;
+        chargedShot.GetComponent<Rigidbody>().isKinematic = true;
+        chargedShot.transform.localPosition = Vector3.zero;
+        chargedShot.transform.localEulerAngles = Vector3.zero;
+        chargedShot.transform.localScale = Vector3.zero;
+
+        var mainVfx = chargedShot.transform.Find("vfx_charge_trail_00");
+        if (mainVfx)
+            Object.DestroyImmediate(mainVfx.GetComponent<AutoMoveToParticle>());
+        else
+            Plugin.Logger.LogError("Could not locate 'vfx_charge_trail_00' child of charged Psychogun shot");
+
+        foreach (ParticleSystem ps in chargedShot.GetComponentsInChildren<ParticleSystem>(true))
+        {
+            var main = ps.main;
+            main.stopAction = ParticleSystemStopAction.None;
+        }
+            
+        chargedShot.GetComponent<Renderer>().enabled = false;
+        chargedShot.transform.Find("trail").gameObject.SetActive(false);
     }
 
     private static void HideAllInChildren(GameObject parent)
