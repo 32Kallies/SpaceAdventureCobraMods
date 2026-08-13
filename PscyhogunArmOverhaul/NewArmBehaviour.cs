@@ -242,6 +242,18 @@ public class NewArmBehaviour : MonoBehaviour
         _takingArmOff = false;
         _johnsonDiscoveredPsychogun = true;
     }
+
+    public void PutArmOnInstantly()
+    {
+        Plugin.Logger.LogInfo("Putting arm on instantly");
+
+        var state = PsychogunStateRememberer.GetInstance();
+        state.SetToken(Token.HardCodedTokens.ForcePsychogunOn, false);
+        state.SetToken(Token.HardCodedTokens.ForcePsychogunOff, true);
+        _forceGrabArmModelEnabled = false;
+        _prostheticOn = true;
+        _puttingArmBackOn = false;
+    }
     
     private void PlayAdditiveAnimation(float speed = 1f, bool reverse = false)
     {
