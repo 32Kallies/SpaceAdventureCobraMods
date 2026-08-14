@@ -8,10 +8,10 @@ public class TrainerStatManager : MonoBehaviour
 {
     public CobraCharacter cobra;
 
-    private bool _crystalBowieInstanceExists;
+    private bool _crystalBoyInstanceExists;
 
-    private float? _defaultRevolverDamage;
-    private float? _defaultCigarDamage;
+    private static float? _defaultRevolverDamage;
+    private static float? _defaultCigarDamage;
 
     private void Start()
     {
@@ -54,10 +54,10 @@ public class TrainerStatManager : MonoBehaviour
             cobra.psychoEnergy = cobra.energy.psychoEnergyMax;
         }
 
-        bool crystalBowieExists = NmiCrystalBowie.Instance != null;
-        if (crystalBowieExists != _crystalBowieInstanceExists)
+        bool crystalBoyExists = NmiCrystalBowie.Instance != null;
+        if (crystalBoyExists != _crystalBoyInstanceExists)
         {
-            _crystalBowieInstanceExists = crystalBowieExists;
+            _crystalBoyInstanceExists = crystalBoyExists;
             OnRevolverDamageChanged(null, null);
         }
     }
@@ -97,7 +97,22 @@ public class TrainerStatManager : MonoBehaviour
         {
             _defaultRevolverDamage = projectile.damage;
         }
-        projectile.damage = (_crystalBowieInstanceExists || Plugin.RevolverDamage.Value < 0) ? _defaultRevolverDamage.Value : Plugin.RevolverDamage.Value;
+
+        float newRevolverDamage;
+        if (Plugin.RevolverDamage.Value < 0)
+        {
+            newRevolverDamage = _defaultRevolverDamage.Value;
+        }
+        else if (_crystalBoyInstanceExists && Plugin.LimitRevolverDamageAgainstCrystalBoy.Value)
+        {
+            newRevolverDamage = Mathf.Min(_defaultRevolverDamage.Value, Plugin.RevolverDamage.Value);
+        }
+        else
+        {
+            newRevolverDamage = Plugin.RevolverDamage.Value;
+        }
+
+        projectile.damage = newRevolverDamage;
     }
 
     private void OnCigarDamageChanged(object sender, EventArgs e)

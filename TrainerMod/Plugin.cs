@@ -19,9 +19,10 @@ public class Plugin : BaseUnityPlugin
     public static ConfigEntry<float> SuperShotDamageNormal { get; private set; }
     public static ConfigEntry<float> SuperShotDamageElites { get; private set; }
     public static ConfigEntry<bool> UnlimitedSuperShots { get; private set; }
-    public static ConfigEntry<float> RevolverDamage { get; private set; } // Does not apply to Crystal Bowie
-    public static ConfigEntry<float> CigarDamage { get; private set; } // NEEDS TESTING
-    public static ConfigEntry<bool> UnlimitedCigars { get; private set; } // NEEDS TESTING
+    public static ConfigEntry<float> RevolverDamage { get; private set; }
+    public static ConfigEntry<bool> LimitRevolverDamageAgainstCrystalBoy { get; private set; }
+    public static ConfigEntry<float> CigarDamage { get; private set; }
+    public static ConfigEntry<bool> UnlimitedCigars { get; private set; }
     public static ConfigEntry<float> CobraHealth { get; private set; }
 
     private const float DefaultPsychogunDamage = 2f;
@@ -51,17 +52,22 @@ public class Plugin : BaseUnityPlugin
 
     private void RegisterConfig()
     {
+        // Psychogun
         PsychogunDamage = Config.Bind("Psychogun", "Psychogun shot damage", DefaultPsychogunDamage,
             new ConfigDescription(FormatNumberDesc("The damage of the charged Psychogun shot.")));
         PsychogunPenetratingShotDamage = Config.Bind("Psychogun", "Fully charged psychogun shot damage",
             DefaultPenetratingPsychogunShotDamage,
             new ConfigDescription(FormatNumberDesc("The damage of the charged Psychogun shot.")));
+        
+        // Guided shot
         CurvedShotDamage = Config.Bind("Guided Shot", "Guided shot damage",
             DefaultCurvedShotDamage,
             new ConfigDescription(FormatNumberDesc("The damage of the guided shot.")));
         CurvedShotMode = Config.Bind("Guided Shot", "Guided shot mode",
             GuidedShotMode.Normal,
             new ConfigDescription(FormatDesc("How often the guided shot can be used.")));
+        
+        // Super shot
         SuperShotDamageNormal = Config.Bind("Super Shot", "Super shot damage - Normal enemies",
             DefaultSuperShotDamageNormal,
             new ConfigDescription(FormatNumberDesc("The super shot damage against most enemy types.")));
@@ -71,15 +77,24 @@ public class Plugin : BaseUnityPlugin
         UnlimitedSuperShots = Config.Bind("Super Shot", "Unlimited super shots",
             false,
             new ConfigDescription(FormatDesc("If true, the requirements for the super shot are disabled.")));
+        
+        // Revolver
         RevolverDamage = Config.Bind("Revolver", "Revolver damage",
             DefaultRevolverDamage,
             new ConfigDescription(FormatNumberDesc("The damage of the Python 77 Revolver.")));
+        LimitRevolverDamageAgainstCrystalBoy = Config.Bind("Revolver", "Limit revolver damage against Crystal Boy",
+            true,
+            new ConfigDescription(FormatDesc("If true, Crystal Boy will be immune to extra revolver damage (recommended).")));
+
+        // Cigars
         CigarDamage = Config.Bind("Cigars", "Explosive cigar damage",
             DefaultCigarDamage,
             new ConfigDescription(FormatNumberDesc("The damage of the explosive cigars.")));
         UnlimitedCigars = Config.Bind("Cigars", "Unlimited cigars",
             false,
             new ConfigDescription(FormatDesc("If true, the cooldown on cigars is disabled.")));
+        
+        // Cobra
         CobraHealth = Config.Bind("Cobra", "Cobra health",
             DefaultCobraHealth,
             new ConfigDescription(FormatNumberDesc("The maximum health of Cobra.")));
