@@ -40,7 +40,7 @@
       {
          "original_file_name": "snd_plr_psychogun_guided_shot_shot.wav",
          "replacement_file_path": "Weapons/PsychogunSpecialShotEnd1.wav",
-         "volume": 1.5
+         "volume": 1.4
       },
       {
          "original_file_name": "snd_plr_revolver_shot.wav",
