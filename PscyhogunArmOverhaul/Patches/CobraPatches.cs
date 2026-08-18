@@ -71,14 +71,4 @@ public static class CobraPatches
 
         return true;
     }
-    
-    [HarmonyPrefix]
-    [HarmonyPatch(nameof(CobraCharacter.ProtheseOff))]
-    private static bool FixHangingSoundPrefix(CobraCharacter __instance, bool instant = false, bool force = false)
-    {
-        if (instant && force && Token.HardCodedTokens.ForceHangingUnleavable.yes())
-            return false;
-
-        return true;
-    }
 }
