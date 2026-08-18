@@ -211,6 +211,8 @@ public class NewArmBehaviour : MonoBehaviour
         state.SetToken(Token.HardCodedTokens.ForcePsychogunOn, false);
         state.SetToken(Token.HardCodedTokens.ForcePsychogunOff, true);
         character.ProtheseOn();
+        // Play sound, which was originally in ProtheseOn but was removed by the DisableOnOffSound transpiler
+        AudioController.Instance.PlaySound(audioSelectionData.eCLIP.PLY_ARM_LOCK, 0.5f);
         
         _prostheticOn = true;
         _puttingArmBackOn = false;
