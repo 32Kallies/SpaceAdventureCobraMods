@@ -56,9 +56,14 @@ public static class FixPsychogunInCutscenesPatch
 
         var mainVfx = chargedShot.transform.Find("vfx_charge_trail_00");
         if (mainVfx)
+        {
             Object.DestroyImmediate(mainVfx.GetComponent<AutoMoveToParticle>());
+            mainVfx.transform.Find("vfx_ps_flipbook_00").transform.localScale = Vector3.one * 0.70f;
+        }
         else
+        {
             Plugin.Logger.LogError("Could not locate 'vfx_charge_trail_00' child of charged Psychogun shot");
+        }
 
         foreach (ParticleSystem ps in chargedShot.GetComponentsInChildren<ParticleSystem>(true))
         {
@@ -66,8 +71,8 @@ public static class FixPsychogunInCutscenesPatch
             main.stopAction = ParticleSystemStopAction.None;
         }
             
-        chargedShot.GetComponent<Renderer>().enabled = false;
-        chargedShot.transform.Find("trail").gameObject.SetActive(false);
+        // chargedShot.GetComponent<Renderer>().enabled = false;
+        // chargedShot.transform.Find("trail").gameObject.SetActive(false);
     }
 
     private static void HideAllInChildren(GameObject parent)
