@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace PscyhogunArmOverhaul;
+namespace PscyhogunArmOverhaul.Patches;
 
 [HarmonyPatch]
 public static class ResetPsychogunAfterCharacterSwapPatch

@@ -2,7 +2,7 @@
 using HarmonyLib;
 using UnityEngine;
 
-namespace PscyhogunArmOverhaul;
+namespace PscyhogunArmOverhaul.Patches;
 
 [HarmonyPatch(typeof(CobraCharacter))]
 public static class CobraPatches

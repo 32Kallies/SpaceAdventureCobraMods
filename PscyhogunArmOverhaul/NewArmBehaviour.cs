@@ -91,7 +91,7 @@ public class NewArmBehaviour : MonoBehaviour
             {
                 if (ShouldTakeArmOffInstantlyForEp1Lvl2())
                 {
-                    TakeArmOffInstantForEp1Lvl2();
+                    TakeArmOffInstantly();
                 }
                 else
                 {
@@ -168,7 +168,7 @@ public class NewArmBehaviour : MonoBehaviour
         {
             if (ShouldTakeArmOffInstantlyForEp1Lvl2())
             {
-                TakeArmOffInstantForEp1Lvl2();
+                TakeArmOffInstantly();
             }
             else
             {
@@ -182,6 +182,14 @@ public class NewArmBehaviour : MonoBehaviour
         if (CanChangeArmState() && CanPutOnArm())
         {
             StartCoroutine(PutArmBackOn(1));
+        }
+    }
+    
+    public void TakeOffArm()
+    {
+        if (CanChangeArmState() && CanTakeOffArm())
+        {
+            StartCoroutine(TakeArmOff(1));
         }
     }
     
@@ -228,7 +236,7 @@ public class NewArmBehaviour : MonoBehaviour
         _takingArmOff = false;
     }
 
-    private void TakeArmOffInstantForEp1Lvl2()
+    public void TakeArmOffInstantly()
     {
         if (_takingArmOff)
             return;
@@ -242,14 +250,18 @@ public class NewArmBehaviour : MonoBehaviour
         _takingArmOff = false;
         _johnsonDiscoveredPsychogun = true;
     }
-
+    
     public void PutArmOnInstantly()
     {
+        if (_puttingArmBackOn || _takingArmOff) return;
+        if (_prostheticOn) return;
+        
         Plugin.Logger.LogInfo("Putting arm on instantly");
 
         var state = PsychogunStateRememberer.GetInstance();
         state.SetToken(Token.HardCodedTokens.ForcePsychogunOn, false);
         state.SetToken(Token.HardCodedTokens.ForcePsychogunOff, true);
+        character.ProtheseOn();
         _forceGrabArmModelEnabled = false;
         _prostheticOn = true;
         _puttingArmBackOn = false;

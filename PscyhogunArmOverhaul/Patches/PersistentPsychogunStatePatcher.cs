@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
-using UnityEngine;
 
-namespace PscyhogunArmOverhaul;
+namespace PscyhogunArmOverhaul.Patches;
 
 [HarmonyPatch]
 public static class PersistentPsychogunStatePatcher

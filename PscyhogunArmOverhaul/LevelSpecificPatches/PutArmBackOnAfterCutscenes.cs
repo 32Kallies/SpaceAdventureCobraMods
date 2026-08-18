@@ -24,12 +24,41 @@ public class PutArmBackOnAfterCutscenes
     [HarmonyPatch(typeof(NmiZigoba), nameof(NmiZigoba.Die))]
     private static void PutArmOnAfterKillingZigova()
     {
+        Plugin.Logger.LogInfo("Zigova died. Putting arm on instantly.");
+
+        TokenController.SetTokenValue(Token.HardCodedTokens.ForcePsychogunOn, 0);
         var armBehavior = NewArmBehaviour.Instance;
         if (armBehavior != null)
         {
             NewArmBehaviour.Instance.PutArmOnInstantly();
         }
+        else
+        {
+            Plugin.Logger.LogError("Failed to find NewArmBehaviour");
+        }
+
+        // Plugin.StartCoroutineOnPlugin(MakeSurePlayerArmIsBackOn());
     }
+
+    /*
+    private static IEnumerator MakeSurePlayerArmIsBackOn()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            yield return new WaitForSeconds(0.1f);
+            var armBehavior = NewArmBehaviour.Instance;
+            if (armBehavior != null)
+            {
+                NewArmBehaviour.Instance.PutArmOnInstantly();
+            }
+            else
+            {
+                Plugin.Logger.LogError("Failed to find NewArmBehaviour");
+            }
+
+        }
+    }
+    */
     
     private static IEnumerator PutArmBackOnAfterCutsceneCoroutine(float delay)
     {
