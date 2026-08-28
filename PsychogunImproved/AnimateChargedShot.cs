@@ -14,12 +14,13 @@ public class AnimateChargedShot : MonoBehaviour
     private Color _defaultColor;
     private Material _material;
     
-    private static readonly Frame[] Animation =
+    
+    private static readonly ColorFrame[] Animation =
     [
         new(0f, Yellow),
         new(0.05f, Blue),
         new(0.11f, Red),
-        Frame.GetDefault(0.17f)
+        ColorFrame.GetDefault(0.17f)
     ];
 
     private static readonly int ColorProperty = Shader.PropertyToID("Color_D9B06DDF");
@@ -36,13 +37,13 @@ public class AnimateChargedShot : MonoBehaviour
         _material.SetColor(ColorProperty, GetColorForFrame(GetCurrentFrame()));
     }
 
-    private Color GetColorForFrame(Frame frame)
+    private Color GetColorForFrame(ColorFrame frame)
     {
         if (frame.UseDefault) return _defaultColor;
         return frame.Color;
     }
 
-    private Frame GetCurrentFrame()
+    private ColorFrame GetCurrentFrame()
     {
         var time = Time.time - _startTime;
         for (int i = Animation.Length - 1; i >= 0; i--)
@@ -59,25 +60,5 @@ public class AnimateChargedShot : MonoBehaviour
     private void OnDestroy()
     {
         Destroy(_material);
-    }
-
-    private struct Frame
-    {
-        public float Time { get; }
-        public Color Color { get; }
-        public bool UseDefault { get; }
-
-        public Frame(float time, Color color) : this(time, color, false)
-        {
-        }
-
-        private Frame(float time, Color color, bool useDefault)
-        {
-            Time = time;
-            Color = color;
-            UseDefault = useDefault;
-        }
-        
-        public static Frame GetDefault(float time) => new(time, Color.white, true);
     }
 }
