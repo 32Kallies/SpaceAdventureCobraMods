@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace GameOverScreen;
 
+// Prevents you from cheating and changing to hardcore while the game is running
 public class HardcoreStateMemorizer : MonoBehaviour
 {
     public static HardcoreStateMemorizer Instance { get; private set; }

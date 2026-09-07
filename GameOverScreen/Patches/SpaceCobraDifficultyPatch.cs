@@ -9,8 +9,8 @@ public class SpaceCobraDifficultyPatch
 {
     private const float DamageMultiplierForInstantDeath = 99999;
     
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(LevelController), nameof(LevelController.OverrideDamage))]
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(CobraCharacter), nameof(CobraCharacter.TakeDamage))]
     public static void DoOneHitInSpaceCobraMode(ref float dmg)
     {
         if (dmg <= Mathf.Epsilon) return;
