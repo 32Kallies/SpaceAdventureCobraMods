@@ -19,6 +19,13 @@ public static class DeathAnimationPatches
         }
         
         // If we ARE dead...
+        
+        // Only run this patch if disintegration has been disabled by the TakeDamagePatches 
+        if (!__instance.TryGetComponent<DisableDisintegrationTag>(out var disintegration) ||
+            !disintegration.disableDisintegration)
+        {
+            return;
+        }
 
         // Make sure this patch will only execute once per npc, the moment death starts
         // technically deathState will still be 0 at this moment, so isDeathStarting will still be false
@@ -93,6 +100,13 @@ public static class DeathAnimationPatches
         }
         
         // If we ARE dead...
+        
+        // Only run this patch if disintegration has been disabled by the TakeDamagePatches 
+        if (!__instance.TryGetComponent<DisableDisintegrationTag>(out var disintegration) ||
+            !disintegration.disableDisintegration)
+        {
+            return;
+        }
 
         // Make sure this patch will only execute once per npc, the moment death starts
         // technically deathState will still be 0 at this moment, so isDeathStarting will still be false
