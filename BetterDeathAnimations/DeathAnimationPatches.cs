@@ -154,6 +154,10 @@ public static class DeathAnimationPatches
 
     private static void PlayNewDeathAnimation(NmiAdvance enemy)
     {
+        if (enemy.characterController != null)
+            enemy.characterController.enabled = false;
+        else
+            Plugin.Logger.LogWarning($"No character controller associated with {enemy}; cannot disable the hitbox");
         enemy.ctrl.myAnimator.runtimeAnimatorController =
             Plugin.Bundle.LoadAsset<RuntimeAnimatorController>("CustomDeathController");
         Vector3 knockbackLandPosition = enemy.transform.position + enemy.transform.forward * -2;
