@@ -20,12 +20,8 @@ public static class DeathAnimationPatches
         
         // If we ARE dead...
         
-        // Only run this patch if disintegration has been disabled by the TakeDamagePatches 
-        if (!__instance.TryGetComponent<DisableDisintegrationTag>(out var disintegration) ||
-            !disintegration.disableDisintegration)
-        {
+        if (!ShouldPlayNewDeathAnimation(__instance))
             return;
-        }
 
         // Make sure this patch will only execute once per npc, the moment death starts
         // technically deathState will still be 0 at this moment, so isDeathStarting will still be false
@@ -100,13 +96,9 @@ public static class DeathAnimationPatches
         }
         
         // If we ARE dead...
-        
-        // Only run this patch if disintegration has been disabled by the TakeDamagePatches 
-        if (!__instance.TryGetComponent<DisableDisintegrationTag>(out var disintegration) ||
-            !disintegration.disableDisintegration)
-        {
+
+        if (!ShouldPlayNewDeathAnimation(__instance))
             return;
-        }
 
         // Make sure this patch will only execute once per npc, the moment death starts
         // technically deathState will still be 0 at this moment, so isDeathStarting will still be false
@@ -150,6 +142,24 @@ public static class DeathAnimationPatches
         
         // we died now, and do this to make sure the original death code doesn't execute again
         __instance.deathState = 2;
+    }
+
+    private static bool ShouldPlayNewDeathAnimation(NmiAdvance enemy)
+    {
+        // Only run this patch if disintegration has been disabled by the TakeDamagePatches 
+        if (Plugin.AlwaysPlayNewDeathAnimation.Value) return true;
+
+        if (enemy.TryGetComponent<DisableDisintegrationTag>(out var disintegration) &&
+            disintegration.disableDisintegration) return true;
+        
+        // Disable disintegration randomly based on the setting
+        int skipDisintegrationChance = Plugin.ChanceForDisintegrationFail.Value;
+        if (skipDisintegrationChance == 0 || Random.value * 100 < skipDisintegrationChance)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private static void PlayNewDeathAnimation(NmiAdvance enemy)
