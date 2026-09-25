@@ -2,6 +2,7 @@ using HarmonyLib;
 
 namespace BetterDeathAnimations;
 
+// Listens to the TakeDamage method in NmiPatrouille and NmiAdvance to add or set the DisableDisintegrationTag as appropriate
 [HarmonyPatch]
 public static class TakeDamagePatches
 {
@@ -24,18 +25,33 @@ public static class TakeDamagePatches
     {
         if (dmg <= 0f) return;
         DisableDisintegrationTag tag;
-        if (dmgType is Damage.DamageType.Revolver or Damage.DamageType.Melee)
+        
+        if (GetDisableDisintegration(dmgType))
         {
             // Disable disintegration for revolver and melee attacks
             if (!enemy.gameObject.TryGetComponent<DisableDisintegrationTag>(out tag))
+            {
                 tag = enemy.gameObject.AddComponent<DisableDisintegrationTag>();
+            }
+
             tag.disableDisintegration = true;
         }
         else
         {
             // Re-enable disintegration for other damage types
             if (enemy.gameObject.TryGetComponent<DisableDisintegrationTag>(out tag))
+            {
                 tag.disableDisintegration = false;
+            }
         }
+    }
+
+    private static bool GetDisableDisintegration(Damage.DamageType dmgType)
+    {
+        if (dmgType is Damage.DamageType.Revolver or Damage.DamageType.Melee)
+            return true;
+        if (dmgType == Damage.DamageType.Psychogun)
+            return !Plugin.UnchargedPsychogunShotsDisintegrate.Value;
+        return false;
     }
 }

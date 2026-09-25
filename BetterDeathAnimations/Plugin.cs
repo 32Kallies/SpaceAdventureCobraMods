@@ -18,6 +18,7 @@ public class Plugin : BaseUnityPlugin
     
     internal static ConfigEntry<bool> AlwaysPlayNewDeathAnimation { get; private set; }
     internal static ConfigEntry<int> ChanceForDisintegrationFail { get; private set; }
+    internal static ConfigEntry<bool> UnchargedPsychogunShotsDisintegrate { get; private set; }
     
     private void Awake()
     {
@@ -28,6 +29,8 @@ public class Plugin : BaseUnityPlugin
         ChanceForDisintegrationFail = Config.Bind("General", "Chance to not disintegrate", 0,
             new ConfigDescription("The chance of enemies dying but not disintegrating, even from psychogun shots and explosions.",
                 new AcceptableValueRange<int>(0, 100)));
+        UnchargedPsychogunShotsDisintegrate = Config.Bind("General", "Uncharged Psychogun shots disintegrate enemies", true,
+            "With this option enabled, uncharged Psychogun shots will not disintegrate enemies.");
 
         Assembly = Assembly.GetExecutingAssembly();
         Bundle = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(Assembly.Location), "Assets", "death_animation"));
