@@ -7,7 +7,8 @@ namespace PsychogunImproved;
 [HarmonyPatch]
 public static class Patches
 {
-    private static bool _upgradedPsychogunShotDirty = false;
+    // This value should be true when a normal psychogun shot was made
+    private static bool _upgradedNormalPsychogunShotDirty = false;
 
     private static string _chargedPsychogunPrefabName;
     
@@ -29,11 +30,14 @@ public static class Patches
         _chargedPsychogunPrefabName = __instance.dependencies.chargedShot.name;
     }
 
+    // This is one of the main patches for this mod. It makes sure the charged VFX is always used
+    // and sets the dirty flag appropriately if upgrading.
     [HarmonyPrefix]
     [HarmonyPatch(typeof(CobraCharacter), nameof(CobraCharacter.ShootPsychogun))]
     public static bool AlwaysShootChargedShotPatch(CobraCharacter __instance, Vector2 dir)
     {
         var behaviour = __instance.gameObject.GetComponent<ImprovedPsychogunBehaviour>();
+        
         if (behaviour == null)
         {
             Plugin.Logger.LogWarning("Failed to find ImprovedPsychogunBehaviour!");
@@ -44,12 +48,13 @@ public static class Patches
         {
             __instance.ShootChargedShot(dir);
             behaviour.StartShotCooldown();
-            _upgradedPsychogunShotDirty = true;
+            _upgradedNormalPsychogunShotDirty = true;
         }
 
         return false;
     }
     
+    // This patch plays the new shoot animation and disables the 'dirty' flag to be safe
     [HarmonyPostfix]
     [HarmonyPatch(typeof(CobraCharacter), nameof(CobraCharacter.ShootChargedShot))]
     public static void PlayShootRecoilAnimation(CobraCharacter __instance)
@@ -62,7 +67,7 @@ public static class Patches
         }
 
         behaviour.PlayShootAnimation();
-        _upgradedPsychogunShotDirty = false;
+        _upgradedNormalPsychogunShotDirty = false;
     }
     
     [HarmonyPostfix]
@@ -70,13 +75,21 @@ public static class Patches
         typeof(GameObject), typeof(bool), typeof(bool), typeof(GameObject), typeof(string))]
     public static void FullyChargedShotParticlePatch(GameObject __result, GameObject particle)
     {
-        if (_upgradedPsychogunShotDirty || !particle.name.Equals(_chargedPsychogunPrefabName))
+        bool isChargedShotParticle = particle.name.Equals(_chargedPsychogunPrefabName);
+        
+        // If the player shot a normal shot
+        if (_upgradedNormalPsychogunShotDirty || !isChargedShotParticle)
         {
+            if (isChargedShotParticle)
+            {
+                var projectile = __result.GetComponent<Projectile>();
+                projectile.damageType = Damage.DamageType.Psychogun;
+            }
             return;
         }
 
-        Plugin.Logger.LogInfo("Patching charged shot particle for fully charged shot");
-
+        // If the player fully charged the Psychogun
+        Plugin.Logger.LogDebug("Patching charged shot particle for fully charged shot");
         try
         {
             __result.GetComponent<MeshRenderer>().enabled = false;
@@ -140,6 +153,6 @@ public static class Patches
     [HarmonyPatch(typeof(CobraCharacter), nameof(CobraCharacter.ShootSub))]
     public static void CleanUpDirtyCheck(CobraCharacter __instance)
     {
-        _upgradedPsychogunShotDirty = false;
+        _upgradedNormalPsychogunShotDirty = false;
     }
 }
