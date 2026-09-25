@@ -30,7 +30,7 @@ public class Plugin : BaseUnityPlugin
             new ConfigDescription("The chance of enemies dying but not disintegrating, even from psychogun shots and explosions.",
                 new AcceptableValueRange<int>(0, 100)));
         UnchargedPsychogunShotsDisintegrate = Config.Bind("General", "Uncharged Psychogun shots disintegrate enemies", true,
-            "With this option enabled, uncharged Psychogun shots will not disintegrate enemies.");
+            "With this option enabled, uncharged Psychogun shots will disintegrate enemies.");
 
         Assembly = Assembly.GetExecutingAssembly();
         Bundle = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(Assembly.Location), "Assets", "death_animation"));
