@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace BetterDeathAnimations;
 
+// The main patch in the mod
 [HarmonyPatch]
 public static class DeathAnimationPatches
 {
