@@ -1,11 +1,12 @@
 ﻿using System.IO;
 using HarmonyLib;
+using PsychogunImproved.Behaviour;
 using UnityEngine;
 
-namespace PsychogunImproved;
+namespace PsychogunImproved.Patches;
 
 [HarmonyPatch]
-public static class Patches
+public static class PsychogunPatches
 {
     // This value should be true when a normal psychogun shot was made
     private static bool _upgradedNormalPsychogunShotDirty = false;

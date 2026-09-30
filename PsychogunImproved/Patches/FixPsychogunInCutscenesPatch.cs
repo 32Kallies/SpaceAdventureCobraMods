@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Playables;
 using Object = UnityEngine.Object;
 
-namespace PsychogunImproved;
+namespace PsychogunImproved.Patches;
 
 [HarmonyPatch]
 public static class FixPsychogunInCutscenesPatch

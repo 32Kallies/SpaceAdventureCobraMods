@@ -1,12 +1,13 @@
 ﻿// PORTIONS OF THIS CLASS WERE CREATED BY CHATGPT
 
-using UnityEngine;
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using Newtonsoft.Json;
-using PsychogunImproved;
+using UnityEngine;
 using UnityEngine.Serialization;
+
+namespace PsychogunImproved.Behaviour;
 
 [Serializable]
 public class RuntimeAdditiveAnimationData

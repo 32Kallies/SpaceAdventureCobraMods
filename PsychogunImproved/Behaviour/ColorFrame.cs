@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace PsychogunImproved;
+namespace PsychogunImproved.Behaviour;
 
 public struct ColorFrame
 {
