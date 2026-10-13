@@ -14,6 +14,7 @@ public class Plugin : BaseUnityPlugin
     internal static Assembly ModAssembly { get; private set; }
 
     internal static ConfigEntry<bool> UnchargedShotsPassThroughEnemies { get; private set; }
+    internal static ConfigEntry<bool> UnchargedShotsImitateChargedShots { get; private set; }
 
     private void Awake()
     {
@@ -24,6 +25,8 @@ public class Plugin : BaseUnityPlugin
 
         UnchargedShotsPassThroughEnemies = Config.Bind("General", "Uncharged Psychogun shots pass through enemies",
             true, "If enabled, all shots (instead of only fully charged shots) will pass through enemies on contact.");
+        UnchargedShotsImitateChargedShots = Config.Bind("General", "Uncharged Psychogun shots imitate charged shots",
+            true, "If enabled, all shots (instead of only fully charged shots) can destroy breakable walls/floors and damage tough enemies.");
 
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
     }
